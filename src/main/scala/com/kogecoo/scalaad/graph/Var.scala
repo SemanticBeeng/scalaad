@@ -1,24 +1,25 @@
 package com.kogecoo.scalaad.graph
 
-import com.kogecoo.scalaad.rule.{Value, ValueRule, ValueWrapperRule}
+import com.kogecoo.scalaad.rule.Implicits._
+import com.kogecoo.scalaad.rule.{ValueRule, ValueWrapperRule}
 
 import scala.language.higherKinds
 
 
-class Var[U[_], T](data: U[T])(implicit r: ValueRule[U, T]) extends Node[U, T] {
-  var gradient: Value[U, T] = r.zeroAdd
+class Var[U[_], T](data: U[T])(implicit override val vr: ValueRule[U, T]) extends ContainerNode[U, T] {
+  var gradient: U[T] = vr.zeroAdd
 
   override def toString: String = s"Var[${ data }]"
-  override def apply(): Value[U, T] = r.toValue(data)
-  override def deriv(wrt: Node[U, T]): Value[U, T] = {
+  override def apply(): U[T] = data
+  override def deriv(wrt: Node[U, T]): U[T] = {
     if (wrt == this) {
-      r.zeroMul
+      vr.zeroMul
     } else {
-      r.zeroAdd
+      vr.derivConst
     }
   }
 
-  override def propagate(g: Value[U, T]): Value[U, T] = { gradient += g * r.zeroMul; g }
+  override def propagate(g: U[T]): U[T] = { gradient += g * vr.zeroMul; g }
 }
 
 object Var {

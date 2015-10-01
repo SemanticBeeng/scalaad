@@ -7,12 +7,9 @@ import scala.reflect.ClassTag
 // Define concrete calculations for U[T] type instances which performed on nodes in computational graph.
 trait ValueRule[U[_], T] {
 
-  val zeroAdd: Value[U, T]  // T + zeroAdd() = T
-  val zeroMul: Value[U, T]  // T * zeroMul() = T
-  val derivConst: Value[U, T]
-
-  def toValue(v: T): Value[U, T]   // FIXME
-  def toValue(v: U[T])(implicit e: DummyImplicit): Value[U, T]   // FIXME
+  val zeroAdd: T  // T + zeroAdd() = T
+  val zeroMul: T  // T * zeroMul() = T
+  val derivConst: T
 
   // because of type erasure, we cannot every 'add' methods to be a same name
 
