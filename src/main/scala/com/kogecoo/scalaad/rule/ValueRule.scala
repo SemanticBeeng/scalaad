@@ -1,7 +1,8 @@
 package com.kogecoo.scalaad.rule
 
 import scala.language.higherKinds
-import scala.reflect.ClassTag
+
+import com.kogecoo.scalaad.graph.Node
 
 
 // Define concrete calculations for U[T] type instances which performed on nodes in computational graph.
@@ -63,5 +64,5 @@ trait MathRule[U[_], T] extends ValueRule[U, T] {
 }
 
 trait ValueWrapperRule[Wrappee, Wrapper[_], T] {
-  def toWrapper(data: Wrappee): Wrapper[T]
+  def toVar(data: Wrappee)(implicit r: ValueRule[Wrapper, T]): Node[Wrapper, T]
 }

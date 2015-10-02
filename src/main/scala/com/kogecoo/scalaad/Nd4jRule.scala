@@ -47,6 +47,7 @@ object Nd4jRule {
       val zeros = Nd4j.zeros(shape: _*)
       INDArray_(zeros)
     }
+
     override def zeroMul(reference: C): C = {
       val shape: Array[Int] = reference.data.shape()
       val ones = Nd4j.ones(shape: _*)
@@ -97,7 +98,9 @@ object Nd4jRule {
   }
 
   class INDArrayWrapperRule extends ValueWrapperRule[INDArray, INDArray_, Double] {
-    override def toWrapper(src: INDArray): INDArray_[Double] = INDArray_(src)
+    override def toVar(data: INDArray)(implicit r: ValueRule[INDArray_, Double]): Node[INDArray_, Double] = {
+      new ContainerVar[INDArray_, T](INDArray_(data))
+    }
   }
 
 }

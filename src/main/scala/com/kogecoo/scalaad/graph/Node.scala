@@ -13,10 +13,13 @@ import scala.language.higherKinds
 // you need to define its computational rules (see the definition of ValueRule).
 
 trait Node[U[_], T] {
+
   def toString: String
+
 }
 
-trait ContainerNode[U[_], T] {
+trait ContainerNode[U[_], T] extends Node[U, T] {
+
   type C = ContainerNode[U, T]
   type N = NonContainerNode[U, T]
 
@@ -42,7 +45,7 @@ trait ContainerNode[U[_], T] {
 
 }
 
-trait NonContainerNode[U[_], T] {
+trait NonContainerNode[U[_], T] extends Node[U, T] {
 
   type C = ContainerNode[U, T]
   type N = NonContainerNode[U, T]

@@ -2,6 +2,7 @@ package com.kogecoo.scalaad.graph
 
 import com.kogecoo.scalaad.rule.Implicits._
 import com.kogecoo.scalaad.rule.{ValueRule, ValueWrapperRule}
+import org.nd4j.linalg.api.ndarray.INDArray
 
 import scala.language.higherKinds
 
@@ -40,8 +41,7 @@ class NonContainerVar[U[_], T](data: T)(implicit vr: ValueRule[U, T]) extends No
 
 object Var {
   def apply[U[_], T](data: U[T])(implicit r: ValueRule[U, T]): ContainerVar[U, T] = new ContainerVar[U, T](data)
-  def apply[U[_], T](data: T)(implicit r: ValueRule[U, T]): NonContainerVar[U, T] = new NonContainerVar[U, T](data)
-  /*def apply[Src, U[_], T](data: Src)(implicit r: ValueRule[U, T], f: ValueWrapperRule[Src, U, T]): Var[U, T] = {
-    new Var[U, T](f.toWrapper(data))
-  }*/
+  def apply[Src, U[_], T](data: Src)(implicit r: ValueRule[U, T], f: ValueWrapperRule[Src, U, T]): Node[U, T] = {
+    f.toVar(data)
+  }
 }
