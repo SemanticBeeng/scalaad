@@ -24,17 +24,11 @@ object DoubleRule {
   class DoubleRule extends DoubleValueRule with DoubleMathRule
 
   trait DoubleValueRule extends ValueRule[Scalar, Double] {
-    override val zeroAdd: Value[Scalar, Double] = toValue(0.0)
-    override val zeroMul: Value[Scalar, Double] = toValue(1.0)
-    override val derivConst: Value[Scalar, Double] = toValue(0.0)
+    override val zeroAdd: Double = 0.0
+    override val zeroMul: Double = 1.0
 
-    override def toValue(v: Double): Value[Scalar, Double] = {
-      NonContainerValue[Scalar, Double](v)
-    }
-
-    override def toValue(v: Scalar[Double])(implicit e: DummyImplicit): Value[Scalar, Double] = {
-      NonContainerValue[Scalar, Double](v.data)
-    }
+    override def zeroAdd(reference: Scalar[Double]): Scalar[Double] = Scalar(0.0)
+    override def zeroMul(reference: Scalar[Double]): Scalar[Double] = Scalar(0.0)
 
     override def addSS(l: Scalar[Double], r: Scalar[Double]): Scalar[Double] = Scalar(l.data + r.data)
     override def subSS(l: Scalar[Double], r: Scalar[Double]): Scalar[Double] = Scalar(l.data - r.data)

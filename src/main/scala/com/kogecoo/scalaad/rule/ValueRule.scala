@@ -9,9 +9,9 @@ trait ValueRule[U[_], T] {
 
   val zeroAdd: T  // T + zeroAdd() = T
   val zeroMul: T  // T * zeroMul() = T
-  val derivConst: T
 
-  // because of type erasure, we cannot every 'add' methods to be a same name
+  def zeroAdd(reference: U[T]): U[T] // FIXME: shape reference is required for some container
+  def zeroMul(reference: U[T]): U[T] //  maybe it should be carried by type parameter
 
   // binary ops for set and set (container and container)
   // (above 'set' doesn't means Scala's type of Set)

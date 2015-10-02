@@ -1,6 +1,6 @@
 package com.kogecoo.scalaad
 
-import com.kogecoo.scalaad.graph.{ Var, sin }
+import com.kogecoo.scalaad.graph.Var
 
 object Application {
   def main(args: Array[String]) = {
@@ -10,6 +10,7 @@ object Application {
   }
 
   def scalarExample() = {
+    import com.kogecoo.scalaad.graph.sin
     import com.kogecoo.scalaad.ScalarRule.Implicits._
 
     val x = Var(5.0)
@@ -27,7 +28,7 @@ object Application {
 
   def breezeExample() = {
     import com.kogecoo.scalaad.BreezeRule.Implicits._
-
+    import com.kogecoo.scalaad.graph.sin
     import breeze.linalg.DenseVector
 
     val x = Var(DenseVector(1.0, 2.0, 3.0))
@@ -43,6 +44,7 @@ object Application {
   }
 
   def nd4jExample() = {
+    import com.kogecoo.scalaad.graph.sin
     import com.kogecoo.scalaad.Nd4jRule.Implicits._
     import org.nd4s.Implicits._
 

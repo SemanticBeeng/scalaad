@@ -4,6 +4,7 @@ import com.kogecoo.scalaad.graph._
 import com.kogecoo.scalaad.rule._
 
 import org.nd4j.linalg.api.ndarray.INDArray
+import org.nd4j.linalg.factory.Nd4j
 import org.nd4s.Implicits._
 
 import scala.language.implicitConversions
@@ -38,13 +39,18 @@ object Nd4jRule {
   class INDArrayRule extends INDArrayValueRule with INDArrayMathRule
 
   trait INDArrayValueRule extends ValueRule[INDArray_, Double] {
-    override val zeroAdd: Value[INDArray_, Double] = toValue(0.0)
-    override val zeroMul: Value[INDArray_, Double] = toValue(1.0)
-    override val derivConst: Value[INDArray_, Double] = toValue(0.0)
+    override val zeroAdd: Double = 0.0
+    override val zeroMul: Double = 1.0
 
-    override def toValue(v: T): Value[INDArray_, T] = NonContainerValue[INDArray_, Double](v)
-    override def toValue(v: C)(implicit e: DummyImplicit): Value[INDArray_, T] = {
-      ContainerValue[INDArray_, Double](v)
+    override def zeroAdd(reference: C): C = {
+      val shape: Array[Int] = reference.data.shape()
+      val zeros = Nd4j.zeros(shape: _*)
+      INDArray_(zeros)
+    }
+    override def zeroMul(reference: C): C = {
+      val shape: Array[Int] = reference.data.shape()
+      val ones = Nd4j.ones(shape: _*)
+      INDArray_(ones)
     }
 
     override def addSS(l: C, r: C): C = INDArray_(l.data.add(r.data))

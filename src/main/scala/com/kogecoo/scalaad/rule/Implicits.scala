@@ -34,8 +34,8 @@ object Implicits {
     def *(rhs: T)(implicit vr: ValueRule[U, T]): T = vr.mulMM(self, rhs)
     def /(rhs: T)(implicit vr: ValueRule[U, T]): T = vr.divMM(self, rhs)
 
-    def unary_+()(implicit vr: ValueRule[U, T]): T = vr.posM(self)
-    def unary_-()(implicit vr: ValueRule[U, T]): T = vr.negM(self)
+    def unary_+()(implicit vr: ValueRule[U, T], d: DummyImplicit): T = vr.posM(self)
+    def unary_-()(implicit vr: ValueRule[U, T], d: DummyImplicit): T = vr.negM(self)
 
   }
 

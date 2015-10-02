@@ -32,14 +32,11 @@ object BreezeRule {
   class DenseMatrixRule extends DenseMatrixValueRule with DenseMatrixMathRule
 
   trait DenseVectorValueRule extends ValueRule[DenseVector, T]{
-    override val zeroAdd: Value[DenseVector, T]    = toValue(0.0)
-    override val zeroMul: Value[DenseVector, T]    = toValue(1.0)
-    override val derivConst: Value[DenseVector, T] = toValue(0.0)
+    override val zeroAdd: T = 0.0
+    override val zeroMul: T = 1.0
 
-    override def toValue(v: T): Value[DenseVector, T] = NonContainerValue[DenseVector, T](v)
-    override def toValue(v: V)(implicit e: DummyImplicit): Value[DenseVector, T] = {
-      ContainerValue[DenseVector, T](v)
-    }
+    override def zeroAdd(reference: V): V = DenseVector.zeros(reference.length)
+    override def zeroMul(reference: V): V = DenseVector.ones(reference.length)
 
     override def addSS(l: V, r: V): V = l + r
     override def subSS(l: V, r: V): V = l - r
@@ -85,14 +82,11 @@ object BreezeRule {
   }
 
   trait DenseMatrixValueRule extends ValueRule[DenseMatrix, T] {
-    override val zeroAdd: Value[DenseMatrix, T]    = toValue(0.0)
-    override val zeroMul: Value[DenseMatrix, T]    = toValue(1.0)
-    override val derivConst: Value[DenseMatrix, T] = toValue(0.0)
+    override val zeroAdd: T = 0.0
+    override val zeroMul: T = 1.0
 
-    override def toValue(v: T): Value[DenseMatrix, T] = NonContainerValue[DenseMatrix, T](v)
-    override def toValue(v: M)(implicit e: DummyImplicit): Value[DenseMatrix, T] = {
-      ContainerValue[DenseMatrix, T](v)
-    }
+    override def zeroAdd(reference: M): M = DenseMatrix.zeros(reference.rows, reference.cols)
+    override def zeroMul(reference: M): M = DenseMatrix.ones(reference.rows, reference.cols)
 
     override def addSS(l: M, r: M): M = l + r
     override def subSS(l: M, r: M): M = l - r
