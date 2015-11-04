@@ -44,6 +44,8 @@ lazy val commonPublishSettings = Seq(
   publishTo               <<= version { (v: String) => choosePublishTo(v) }
 )
 
+
+
 lazy val commonScalacOptions = Seq(
   "-feature",
   "-deprecation",
@@ -56,10 +58,12 @@ lazy val commonScalacOptions = Seq(
 lazy val commonResolvers = Seq(
   "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
   "Sonatype release Repository" at "http://oss.sonatype.org/service/local/staging/deploy/maven2/",
-  "Local Maven Repository" at "file://"+Path.userHome.absolutePath+"/.m2/repository/"
+  "Local Maven Repository" at "file://"+Path.userHome.absolutePath+"/.m2/repository/",
+  "bintray/non" at "http://dl.bintray.com/non/maven"
 )
 
 lazy val commonLibraryDependencies = Seq(
+  "com.chuusai" %% "shapeless" % "2.2.5",
   "org.scalacheck" %% "scalacheck" % "1.12.5" % "test",
   "org.scalatest" %% "scalatest" % "2.2.4" % "test"
 )

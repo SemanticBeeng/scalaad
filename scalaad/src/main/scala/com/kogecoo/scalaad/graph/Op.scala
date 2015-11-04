@@ -1,68 +1,70 @@
 package com.kogecoo.scalaad.graph
 
-import com.kogecoo.scalaad.rule.ValueRule
-import com.kogecoo.scalaad.value.Value
 
-import scala.language.higherKinds
+// Element-wise Add
+case class Add00(l :N0, r: N0) extends Op00
+case class Add11(l :N1, r: N1) extends Op11
+case class Add22(l :N2, r: N2) extends Op22
+
+// Broadcast Add
+case class Add01(l :N0, r: N1) extends Op01
+case class Add10(l :N1, r: N0) extends Op10
+case class Add02(l :N0, r: N2) extends Op02
+case class Add20(l :N2, r: N0) extends Op20
+case class Add12(l :N1, r: N2) extends Op12
+case class Add21(l :N2, r: N1) extends Op21
+
+// Element-wise Sub
+case class Sub00(l :N0, r: N0) extends Op00
+case class Sub11(l :N1, r: N1) extends Op11
+case class Sub22(l :N2, r: N2) extends Op22
+
+// Broadcast Sub
+case class Sub01(l :N0, r: N1) extends Op01
+case class Sub10(l :N1, r: N0) extends Op10
+case class Sub02(l :N0, r: N2) extends Op02
+case class Sub20(l :N2, r: N0) extends Op20
+case class Sub12(l :N1, r: N2) extends Op12
+case class Sub21(l :N2, r: N1) extends Op21
+
+// Element-wise Mul
+case class Mul00(l :N0, r: N0) extends Op00
+case class Mul11(l :N1, r: N1) extends Op11
+case class Mul22(l :N2, r: N2) extends Op22
+
+// Broadcast Mul
+case class Mul01(l :N0, r: N1) extends Op01
+case class Mul10(l :N1, r: N0) extends Op10
+case class Mul02(l :N0, r: N2) extends Op02
+case class Mul20(l :N2, r: N0) extends Op20
+case class Mul12(l :N1, r: N2) extends Op12
+case class Mul21(l :N2, r: N1) extends Op21
+
+// Element-wise Div
+case class Div00(l :N0, r: N0) extends Op00
+case class Div11(l :N1, r: N1) extends Op11
+case class Div22(l :N2, r: N2) extends Op22
+
+// Broadcast Div
+case class Div01(l :N0, r: N1) extends Op01
+case class Div10(l :N1, r: N0) extends Op10
+case class Div02(l :N0, r: N2) extends Op02
+case class Div20(l :N2, r: N0) extends Op20
+case class Div12(l :N1, r: N2) extends Op12
+case class Div21(l :N2, r: N1) extends Op21
+
+// Element-wise Pos
+case class Pos0(v: N0) extends Op0
+case class Pos1(v: N1) extends Op1
+case class Pos2(v: N2) extends Op2
+
+// Element-wise Neg
+case class Neg0(v: N0) extends Op0
+case class Neg1(v: N1) extends Op1
+case class Neg2(v: N2) extends Op2
+
+// Transpose
+case class Transpose1(v: N1) extends Op1
+case class Transpose2(v: N2) extends Op2
 
 
-case class Add[U[_], T](lhs: Node[U, T], rhs: Node[U, T])(implicit vr: ValueRule[U, T]) extends BinaryOp[U, T] {
-  override def toString: String = s"(${ lhs.toString } + ${ rhs.toString })"
-  override def apply(): Value[U, T] = lhs() + rhs()
-  override def deriv(wrt: Var[U, T]): Value[U, T] = lhs.deriv(wrt) + rhs.deriv(wrt)
-  override def propagate(g: Value[U, T]): Value[U, T] = lhs.propagate(g) + rhs.propagate(g)
-}
-
-case class Sub[U[_], T](lhs: Node[U, T], rhs: Node[U, T])(implicit r: ValueRule[U, T]) extends BinaryOp[U, T] {
-  override def toString: String = s"(${ lhs.toString } - ${ rhs.toString })"
-  override def apply(): Value[U, T] = lhs() - rhs()
-  override def deriv(wrt: Var[U, T]): Value[U, T] = lhs.deriv(wrt) - rhs.deriv(wrt)
-  override def propagate(g: Value[U, T]): Value[U, T] = lhs.propagate(g) + rhs.propagate(-g)
-}
-
-case class Mul[U[_], T](lhs: Node[U, T], rhs: Node[U, T])(implicit r: ValueRule[U, T]) extends BinaryOp[U, T] {
-  override def toString: String = s"(${ lhs.toString } * ${ rhs.toString })"
-  override def apply(): Value[U, T] = lhs() * rhs()
-  override def deriv(wrt: Var[U, T]): Value[U, T] = {
-    lhs.deriv(wrt) * rhs() + lhs() * rhs.deriv(wrt)
-  }
-
-  override def propagate(g: Value[U, T]): Value[U, T] = {
-    lhs.propagate(g * rhs()) + rhs.propagate(g * lhs())
-  }
-}
-
-case class Div[U[_], T](lhs: Node[U, T], rhs: Node[U, T])(implicit r: ValueRule[U, T]) extends BinaryOp[U, T] {
-  override def toString: String = s"(${ lhs.toString } / ${ rhs.toString })"
-  override def apply(): Value[U, T] = lhs() / rhs()
-  override def deriv(wrt: Var[U, T]): Value[U, T] = {
-    val rhs_val: Value[U, T] = rhs()
-    lhs.deriv(wrt) / rhs_val  - rhs.deriv(wrt) * lhs() / rhs_val / rhs_val
-  }
-
-  override def propagate(g: Value[U, T]): Value[U, T] = {
-    val rhs_val = rhs()
-    lhs.propagate(g / rhs_val) + rhs.propagate(-g * lhs() / rhs_val / rhs_val)
-  }
-}
-
-case class Pos[U[_], T](v: Node[U, T])(implicit r: ValueRule[U, T]) extends UnaryOp[U, T] {
-  override def toString: String = s"+(${ v })"
-  override def apply(): Value[U, T] = +v()
-  override def deriv(wrt: Var[U, T]): Value[U, T] = +v.deriv(wrt)
-  override def propagate(g: Value[U, T]): Value[U, T] = v.propagate(+g)
-}
-
-case class Neg[U[_], T](v: Node[U, T])(implicit r: ValueRule[U, T]) extends UnaryOp[U, T] {
-  override def toString: String = s"-(${ v })"
-  override def apply(): Value[U, T] = -v()
-  override def deriv(wrt: Var[U, T]): Value[U, T] = -v.deriv(wrt)
-  override def propagate(g: Value[U, T]): Value[U, T] = v.propagate(-g)
-}
-
-case class Transpose[U[_], T](v: Node[U, T])(implicit r: ValueRule[U, T]) extends UnaryOp[U, T] {
-  override def toString: String = s"${ v }.T"
-  override def apply(): Value[U, T] = v().T
-  override def deriv(wrt: Var[U, T]): Value[U, T] = v.deriv(wrt).T
-  override def propagate(g: Value[U, T]): Value[U, T] = v.propagate(g.T)
-}
