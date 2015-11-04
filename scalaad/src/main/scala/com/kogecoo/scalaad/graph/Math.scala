@@ -4,7 +4,7 @@ import com.kogecoo.scalaad.rule.MathRule
 import com.kogecoo.scalaad.value.{ContainerValue, NonContainerValue, Value}
 
 import scala.language.higherKinds
-
+/*
 
 class sin[U[_], T](v: Node[U, T])(implicit vr: MathRule[U, T]) extends UnaryOp[U, T] {
   override def toString: String = s"sin(${ v })"
@@ -345,4 +345,4 @@ object where {
     case (cond: ContainerValue[U, Boolean],    a: ContainerValue[U, T],    b: ContainerValue[U, T])    => ContainerValue[U, T](mr.whereSSS(cond.data, a.data, b.data))
   }
 }
-
+*/

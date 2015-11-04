@@ -1,5 +1,5 @@
 package com.kogecoo.scalaad
-
+/*
 import com.kogecoo.scalaad.graph.{ Scalar, ScalarConst}
 import com.kogecoo.scalaad.rule._
 
@@ -152,4 +152,4 @@ object DoubleRule {
     override def toWrapper(src: Double): Scalar[Double] = Scalar(src)
   }
 
-}
+}*/
