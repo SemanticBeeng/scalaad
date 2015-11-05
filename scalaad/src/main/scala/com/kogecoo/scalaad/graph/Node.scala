@@ -1,72 +1,143 @@
 package com.kogecoo.scalaad.graph
 
+import com.kogecoo.scalaad.graph.op._
 import com.kogecoo.scalaad.rule.ValueRule
-import com.kogecoo.scalaad.value.Value
 
 import shapeless.Nat
-import shapeless.ops.nat.LT.<
-import shapeless.ops.nat.{Max, Diff, Min}
 
 import scala.language.higherKinds
 
 
-// The most fundamental component of computational graph for automatic derivation.
-// Every node in a computational graph must inherit Node.
-//
-//  Node doesn't know actual computational rule (how to calculate +, -, *, ...),
-// so if you want to compute derivation on your own class (ComplexNumber, Matrix, etc),
-// you need to define its computational rules (see the definition of ValueRule).
-
-trait Node[U[_], T, Rank <: Nat] {
-
-  type N = Node[U, T, Rank]
-  type N0 = Node[U, T, Nat._0]
-  type NK[K] = Node[U, T, K]
+trait Node[Rank] {
 
   override def toString: String
 
-  def apply(): Value[U, T]
-  def deriv[K <: Nat](wrt: Var[U, T, K]): N // compute with forward-mode automatic differentiation
-  def propagate0[K <: Nat : Eq0[K]](g: Node[U, T, K]): N    // compute with reverse-mode autmatic differentiation
-  def propagate1[K <: Nat : Eq1[K]](g: Node[U, T, K]): N
-  def propagate2[K <: Nat : Eq2[K]](g: Node[U, T, K]): N
-  def grad[K <: Nat](fixme: U[T])(implicit r: ValueRule[U, T]): Node[U, T, OutRank] = propagate(One[U, T, OutRank](fixme))
+  def grad: Node[U, T, OutRank] = propagate(One[U, T, OutRank](fixme))
 
   //propagate0, 1, 2
+}
+
+trait Node0[T] extends Node[Nat._0] {
+
+  def apply(): T
+
+  def deriv0      (wrt: N0[T]   ): N0[T]
+  def deriv1[V[_]](wrt: N1[V, T]): N1[V, T]
+  def deriv2[M[_]](wrt: N2[M, T]): N2[M, T]
+
+  def propagate0      (g: N0[T]   ): N0[T]
+  def propagate1[V[_]](g: N1[V, T]): N1[V, T]
+  def propagate2[M[_]](g: N2[M, T]): N2[M, T]
+
+}
+
+
+trait Node1[V[_], T] extends Node[Nat._1] {
+
+  def apply(): V[T]
+
+  def deriv0      (wrt: N0[T]   ): N1[V, T]
+  def deriv1[M[_]](wrt: N1[V, T]): N2[M, T]
+
+  def propagate0(g: N0[T]): N1[V, T]
+  def propagate1[M[_]](g: N1[V, T]): N2[M, T]
+
+}
+
+trait Node2[M[_], T] extends Node[Nat._2] {
+
+  def apply(): M[T]
+
+  def deriv0(wrt: N0[T]): N2[M, T]
+
+  def propagate0(g: N0[T]): N2[M, T]
+
 }
 
 
 object Node {
 
-  implicit class NodeOp[U[_], T, L <: Nat](self: Node[U, T, L]) {
-    type N[Rank] = Node[U, T, Rank]
-    type EqL[R] = L =:= R
-    type ZeroL = L =:= Nat._0
-    type Gt0[R] = Nat._0 < R
+  implicit class Node0Ops[T](self: N0[T]) {
 
-    /*def +[R <: Nat](rhs: N[R])(implicit ev: Max[L, R]): N[ev.Out] = {
-      (self, rhs) match {
-        case (l: Nat._0, r: Nat._0) => Add00[U, T, Nat._0, Nat._0](l, r)
-        case (l: Nat   , r: Nat._0) => AddL0(l, r)
-        case (l: Nat._0, r: Nat   ) => Add0R(l, r)
-        case (l: Nat   , r: Nat   ) => AddLR(l, r)
-      }
-    }*/
-    def +[R <: Nat : Eq0](rhs: N[R])(implicit ev: Eq0[L]): N[L] = Add00[U, T, L, R](self, rhs)
-    def +[R <: Nat : Eq0](rhs: N[R])(implicit ev: Gt0[L]): N[L] = AddL0[U, T, L, R](self, rhs)
-    def +[R <: Nat : Gt0](rhs: N[R])(implicit ev: ZeroL):  N[R] = Add0R[U, T, L, R](self, rhs)
-    def +[R <: Nat : Gt0 : EqL](rhs: N[R])(implicit ev1: Gt0[L]): N[L] = AddLR[U, T, L, R](self, rhs)
+    def +(rhs: N0[T]): N0[T] = Add00[T](self, rhs)
+
+    def :+[V[_]](rhs: N1[V, T]): N1[V, T] = BroadcastAdd01[V, T](self, rhs)
+    def :+[M[_]](rhs: N2[M, T]): N2[M, T] = BroadcastAdd02[M, T](self, rhs)
+
+    def -(rhs: N0[T]): N0[T] = Sub00[T](self, rhs)
+
+    def :-[V[_]](rhs: N1[V, T]): N1[V, T] = BroadcastSub01[V, T](self, rhs)
+    def :-[M[_]](rhs: N2[M, T]): N2[M, T] = BroadcastSub02[M, T](self, rhs)
+
+    def *(rhs: N0[T]): N0[T] = Mul00[T](self, rhs)
+
+    def :*[V[_]](rhs: N1[V, T]): N1[V, T] = BroadcastMul01[V, T](self, rhs)
+    def :*[M[_]](rhs: N2[M, T]): N2[M, T] = BroadcastMul02[M, T](self, rhs)
+
+    def /(rhs: N0[T]): N0[T] = Div00[T](self, rhs)
+
+    def :/[V[_]](rhs: N1[V, T]): N1[V, T] = BroadcastDiv01[V, T](self, rhs)
+    def :/[M[_]](rhs: N2[M, T]): N2[M, T] = BroadcastDiv02[M, T](self, rhs)
+
+    def unary_+(): N0[T] = Pos0[T](self)
+    def unary_-(): N0[T] = Neg0[T](self)
+    def T(): N0[T] = Transpose0[T](self)
+  }
 
 
+  implicit class Node1Ops[V, T](self: N1[V, T]) {
 
-    def -[RankR <: Nat](rhs: Node[U, T, RankR])(implicit c: Cons[RankR], r: ValueRule[U, T], o: OutRank[RankR]): Node[U, T, o.Out] = Sub[U, T, L, RankR, o.Out](self, rhs)
-    def *[RankR <: Nat](rhs: Node[U, T, RankR])(implicit c: Cons[RankR], r: ValueRule[U, T], o: OutRank[RankR]): Node[U, T, o.Out] = Mul[U, T, L, RankR, o.Out](self, rhs)
-    def /[RankR <: Nat](rhs: Node[U, T, RankR])(implicit c: Cons[RankR], r: ValueRule[U, T], o: OutRank[RankR]): Node[U, T, o.Out] = Div[U, T, L, RankR, o.Out](self, rhs)
+    def +(rhs: N1[V, T]): N1[V, T] = Add11[V, T](self, rhs)
 
-    def unary_+(rhs: Node[U, T, L])(implicit r: ValueRule[U, T]): Node[U, T, L] = Pos[U, T, L](self)
-    def unary_-(rhs: Node[U, T, L])(implicit r: ValueRule[U, T]): Node[U, T, L] = Neg[U, T, L](self)
+    def :+(rhs: N0[T]   ): N1[V, T] = BroadcastAdd10[V, T](self, rhs)
+    def :+[M[_]](rhs: N2[M, T]): N2[M, T] = BroadcastAdd12[M, V, T](self, rhs)
 
-    def T(implicit r: ValueRule[U, T]): Node[U, T, L] = Transpose[U, T, L](self)
+    def -(rhs: N1[V, T]): N1[V, T] = Sub11[V, T](self, rhs)
+
+    def :-(rhs: N0[T]   ): N1[V, T] = BroadcastSub10[V, T](self, rhs)
+    def :-[M[_]](rhs: N2[M, T]): N2[M, T] = BroadcastSub12[M, V, T](self, rhs)
+
+    def *(rhs: N1[V, T]): N1[V, T] = Mul11[V, T](self, rhs)
+
+    def :*(rhs: N0[T]   ): N1[V, T] = BroadcastMul10[V, T](self, rhs)
+    def :*[M[_]](rhs: N2[M, T]): N2[M, T] = BroadcastMul12[M, V, T](self, rhs)
+
+    def /(rhs: N1[V, T]): N1[V, T] = Div11[V, T](self, rhs)
+
+    def :/(rhs: N0[T]   ): N1[V, T] = BroadcastDiv10[V, T](self, rhs)
+    def :/[M[_]](rhs: N2[M, T]): N2[M, T] = BroadcastDiv12[M, V, T](self, rhs)
+
+    def unary_+(): N1[V, T] = Pos1[V, T](self)
+    def unary_-(): N1[V, T] = Neg1[V, T](self)
+    def T(): N1[V, T] = Transpose1[V, T](self)
+  }
+
+
+  implicit class Node2Ops[M, T](self: N2[M, T]) {
+
+    def +(rhs: N2[M, T]): N2[M, T] = Add22[M, T](self, rhs)
+
+    def :+[V[_]](rhs: N1[V, T]): N2[M, T] = BroadcastAdd21[M, V, T](self, rhs)
+    def :+(rhs: N0[T]   ): N2[M, T] = BroadcastAdd20[M, T](self, rhs)
+
+    def -(rhs: N2[M, T]): N2[M, T] = Sub22[M, T](self, rhs)
+
+    def :-[V[_]](rhs: N1[V, T]): N2[M, T] = BroadcastSub21[M, V, T](self, rhs)
+    def :-(rhs: N0[T]   ): N2[M, T] = BroadcastSub20[M, T](self, rhs)
+
+    def *(rhs: N2[M, T]): N2[M, T] = Mul22[M, T](self, rhs)
+
+    def :*[V[_]](rhs: N1[V, T]): N2[M, T] = BroadcastMul21[M, V, T](self, rhs)
+    def :*(rhs: N0[T]   ): N2[M, T] = BroadcastMul20[M, T](self, rhs)
+
+    def /(rhs: N2[M, T]): N2[M, T] = Div22[M, T](self, rhs)
+
+    def :/[V[_]](rhs: N1[V, T]): N2[M, T] = BroadcastDiv21[M, V, T](self, rhs)
+    def :/(rhs: N0[T]   ): N2[M, T] = BroadcastDiv20[M, T](self, rhs)
+
+    def unary_+(): N2[M, T] = Pos2[M, T](self)
+    def unary_-(): N2[M, T] = Neg2[M, T](self)
+    def T(): N2[M, T] = Transpose2[M, T](self)
   }
 
 }
