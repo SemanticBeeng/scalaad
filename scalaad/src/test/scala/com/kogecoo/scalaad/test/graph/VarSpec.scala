@@ -1,6 +1,5 @@
 package com.kogecoo.scalaad.test.graph
 
-import com.kogecoo.scalaad.graph.Scalar
 import com.kogecoo.scalaad.test.helper.gen._
 import com.kogecoo.scalaad.test.helper.matcher.ValueMatcherProp._
 import com.kogecoo.scalaad.test.helper.rule.{SeqFloatExactCompareRule, ScalarIntCompareRule, CompareRule}
@@ -46,15 +45,15 @@ class VarSpecGen[U[_], T](nodes: GenNode[U, T], values: GenValue[U, T])(implicit
   }
 
   def derivSelf = forAll(nodes.genVar()) {
-    c => c.deriv(c) shouldBe rule.one(c())
+    c => c.forward(c) shouldBe rule.one(c())
   }
 
   def derivUnknownVar = forAll(nodes.genVar(), nodes.genVar()) {
-    (c, v) => c.deriv(v) shouldBe rule.zero(v())
+    (c, v) => c.forward(v) shouldBe rule.zero(v())
   }
 
   def propagate = forAll(nodes.genVar(), values.genValue()) {
-    (c, v) => c.propagate(v) shouldBe rule.one(c()) * v
+    (c, v) => c.reverse(v) shouldBe rule.one(c()) * v
   }
 
   def grad = forAll(nodes.genVar()) {

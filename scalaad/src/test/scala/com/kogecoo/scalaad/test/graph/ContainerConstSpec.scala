@@ -1,7 +1,5 @@
 package com.kogecoo.scalaad.test.graph
 
-import com.kogecoo.scalaad.graph.Scalar
-
 import com.kogecoo.scalaad.test.helper.matcher.ValueMatcherProp._
 import com.kogecoo.scalaad.test.helper.rule.{SeqFloatExactCompareRule, ScalarIntCompareRule, CompareRule}
 import com.kogecoo.scalaad.test.helper.rule.ScalarIntValueRule.Implicits._

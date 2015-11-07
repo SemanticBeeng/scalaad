@@ -1,7 +1,5 @@
 package com.kogecoo.scalaad.test.helper.rule
 
-import com.kogecoo.scalaad.graph.Scalar
-
 
 class ScalarIntCompareRule extends CompareRule[Scalar, Int] {
 

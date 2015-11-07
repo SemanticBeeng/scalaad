@@ -1,72 +1,252 @@
 package com.kogecoo.scalaad.graph
 
-import com.kogecoo.scalaad.rule.ValueRule
-import com.kogecoo.scalaad.value.Value
-
-import shapeless.Nat
-import shapeless.ops.nat.LT.<
-import shapeless.ops.nat.{Max, Diff, Min}
 
 import scala.language.higherKinds
 
 
-// The most fundamental component of computational graph for automatic derivation.
-// Every node in a computational graph must inherit Node.
-//
-//  Node doesn't know actual computational rule (how to calculate +, -, *, ...),
-// so if you want to compute derivation on your own class (ComplexNumber, Matrix, etc),
-// you need to define its computational rules (see the definition of ValueRule).
-
-trait Node[U[_], T, Rank <: Nat] {
-
-  type N = Node[U, T, Rank]
-  type N0 = Node[U, T, Nat._0]
-  type NK[K] = Node[U, T, K]
-
-  override def toString: String
-
-  def apply(): Value[U, T]
-  def deriv[K <: Nat](wrt: Var[U, T, K]): N // compute with forward-mode automatic differentiation
-  def propagate0[K <: Nat : Eq0[K]](g: Node[U, T, K]): N    // compute with reverse-mode autmatic differentiation
-  def propagate1[K <: Nat : Eq1[K]](g: Node[U, T, K]): N
-  def propagate2[K <: Nat : Eq2[K]](g: Node[U, T, K]): N
-  def grad[K <: Nat](fixme: U[T])(implicit r: ValueRule[U, T]): Node[U, T, OutRank] = propagate(One[U, T, OutRank](fixme))
-
-  //propagate0, 1, 2
+trait Node[T, Shape] {
+  def eval[V](implicit E: Eval[Node[T, Shape], V]): V = E.eval(this)
+  def forward[W, O](w: W)(implicit F: Forward[Node[T, Shape], W, O]): O = F.forward(this, w)
+  def reverse[G, O](g: G)(implicit R: Reverse[Node[T, Shape], G, O]): O = R.reverse(this, g)
 }
 
+case class Const[T](v: T) extends N0[T]
 
-object Node {
-
-  implicit class NodeOp[U[_], T, L <: Nat](self: Node[U, T, L]) {
-    type N[Rank] = Node[U, T, Rank]
-    type EqL[R] = L =:= R
-    type ZeroL = L =:= Nat._0
-    type Gt0[R] = Nat._0 < R
-
-    /*def +[R <: Nat](rhs: N[R])(implicit ev: Max[L, R]): N[ev.Out] = {
-      (self, rhs) match {
-        case (l: Nat._0, r: Nat._0) => Add00[U, T, Nat._0, Nat._0](l, r)
-        case (l: Nat   , r: Nat._0) => AddL0(l, r)
-        case (l: Nat._0, r: Nat   ) => Add0R(l, r)
-        case (l: Nat   , r: Nat   ) => AddLR(l, r)
-      }
-    }*/
-    def +[R <: Nat : Eq0](rhs: N[R])(implicit ev: Eq0[L]): N[L] = Add00[U, T, L, R](self, rhs)
-    def +[R <: Nat : Eq0](rhs: N[R])(implicit ev: Gt0[L]): N[L] = AddL0[U, T, L, R](self, rhs)
-    def +[R <: Nat : Gt0](rhs: N[R])(implicit ev: ZeroL):  N[R] = Add0R[U, T, L, R](self, rhs)
-    def +[R <: Nat : Gt0 : EqL](rhs: N[R])(implicit ev1: Gt0[L]): N[L] = AddLR[U, T, L, R](self, rhs)
+case class Zeros[T](n: Int) extends N1[T]
 
 
+trait Eval[N, V] {
+  def eval(n: N): V
+}
 
-    def -[RankR <: Nat](rhs: Node[U, T, RankR])(implicit c: Cons[RankR], r: ValueRule[U, T], o: OutRank[RankR]): Node[U, T, o.Out] = Sub[U, T, L, RankR, o.Out](self, rhs)
-    def *[RankR <: Nat](rhs: Node[U, T, RankR])(implicit c: Cons[RankR], r: ValueRule[U, T], o: OutRank[RankR]): Node[U, T, o.Out] = Mul[U, T, L, RankR, o.Out](self, rhs)
-    def /[RankR <: Nat](rhs: Node[U, T, RankR])(implicit c: Cons[RankR], r: ValueRule[U, T], o: OutRank[RankR]): Node[U, T, o.Out] = Div[U, T, L, RankR, o.Out](self, rhs)
+trait Forward[N, W, O] {
+  def forward(n: N, wrt: W): O
+}
 
-    def unary_+(rhs: Node[U, T, L])(implicit r: ValueRule[U, T]): Node[U, T, L] = Pos[U, T, L](self)
-    def unary_-(rhs: Node[U, T, L])(implicit r: ValueRule[U, T]): Node[U, T, L] = Neg[U, T, L](self)
+trait Reverse[N, G, O] {
+  def reverse(n: N, g: G): O
+}
 
-    def T(implicit r: ValueRule[U, T]): Node[U, T, L] = Transpose[U, T, L](self)
+object Eval {
+  def $00[T: Numeric](f: (Numeric[T], N0[T], N0[T]) => T): Eval[Op00[T], T] = new Eval[Op00[T], T] {
+    def eval(n: Op00[T]): T = f(implicitly[Numeric[T]], n.left, n.right)
+  }
+  implicit def const[T] = new Eval[Const[T], T] {
+    def eval(n: Const[T]): T = n.v
+  }
+  implicit def zeros[T] = new Eval[Zeros, Seq[T]] {
+    def eval(n: Zeros): Seq[T] = Seq.fill(n.n)(implicitly[Numeric[T]].zero)
+  }
+  implicit def add00_[T: Numeric] = $00((N, l, r) => N.plus(l.eval, r.eval))
+  implicit def add00[T : Numeric] = new Eval[Add00, T] {
+    def eval(n: Add00): T = implicitly[Numeric[T]].plus(n.left.eval, n.right.eval)
+  }
+}
+
+object Forward {
+  implicit def add000[T] = new Forward[Add00, N0[T], N0[T]] {
+    def forward(n: Add00, wrt: N0[T]) = Add00(n.left.forward(wrt), n.right.forward(wrt))
+  }
+}
+
+object Reverse {
+
+  /** short-handed writing method for reverse mode differentiation.
+    * N: type of an operator Node
+    * O: type of an output Node
+    * G: type of a (root of) gradient tree which propagating from parent Node.
+    */
+  def $[N, G, O](f: (N, G) => O) = new Reverse[N, G, O] {
+    def reverse(n: N, g: G): O = f(n, g)
   }
 
+  /** more short-handed writing method for reverse mode differentiation of a binary operator.
+    * left:  order-0 Node
+    * right: order-0 Node
+    * g:     order-0 Node
+    */
+  def $000[T, O](f: (N0[T], N0[T], N0[T]) => O): Reverse[Op00[T], N0[T], O] = new Reverse[Op00[T], N0[T], O] {
+    def reverse(n: Op00[T], g: N0[T]): O = f(n.left, n.right, g)
+  }
+
+  /** more short-handed writing method for reverse mode differentiation of a binary operator.
+    * left:  order-0 Node
+    * right: order-0 Node
+    * g:     order-1 Node
+    */
+  def $001[T, O](f: (N0[T], N0[T], N1[T]) => O): Reverse[Op00[T], N1[T], O] = new Reverse[Op00[T], N1[T], O] {
+    def reverse(n: Op00[T], g: N1[T]): O = f(n.left, n.right, g)
+  }
+
+  /** more short-handed writing method for reverse mode differentiation of a binary operator.
+    * left:  order-0 Node
+    * right: order-0 Node
+    * g:     order-2 Node
+    */
+  def $002[T, O](f: (N0[T], N0[T], N2[T]) => O): Reverse[Op00[T], N2[T], O] = new Reverse[Op00[T], N2[T], O] {
+    def reverse(n: Op00[T], g: N2[T]): O = f(n.left, n.right, g)
+  }
+
+  /** more short-handed writing method for reverse mode differentiation of a binary operator.
+    * left:  order-0 Node
+    * right: order-1 Node
+    * g:     order-0 Node
+    */
+  def $010[T, O](f: (N0[T], N1[T], N0[T]) => O): Reverse[Op01[T], N0[T], O] = new Reverse[Op01[T], N0[T], O] {
+    def reverse(n: Op01[T], g: N0[T]): O = f(n.left, n.right, g)
+  }
+
+  /** more short-handed writing method for reverse mode differentiation of a binary operator.
+    * left:  order-0 Node
+    * right: order-1 Node
+    * g:     order-1 Node
+    */
+  def $011[T, O](f: (N0[T], N1[T], N1[T]) => O): Reverse[Op01[T], N1[T], O] = new Reverse[Op01[T], N1[T], O] {
+    def reverse(n: Op01[T], g: N1[T]): O = f(n.left, n.right, g)
+  }
+
+  /** more short-handed writing method for reverse mode differentiation of a binary operator.
+    * left:  order-1 Node
+    * right: order-0 Node
+    * g:     order-0 Node
+    */
+  def $100[T, O](f: (N1[T], N0[T], N0[T]) => O): Reverse[Op10[T], N0[T], O] = new Reverse[Op10[T], N0[T], O] {
+    def reverse(n: Op10[T], g: N0[T]): O = f(n.left, n.right, g)
+  }
+
+  /** more short-handed writing method for reverse mode differentiation of a binary operator.
+    * left:  order-1 Node
+    * right: order-0 Node
+    * g:     order-1 Node
+    */
+  def $101[T, O](f: (N1[T], N0[T], N1[T]) => O): Reverse[Op10[T], N1[T], O] = new Reverse[Op10[T], N1[T], O] {
+    def reverse(n: Op10[T], g: N1[T]): O = f(n.left, n.right, g)
+  }
+
+  /** more short-handed writing method for reverse mode differentiation of a binary operator.
+    * left:  order-1 Node
+    * right: order-0 Node
+    * g:     order-0 Node
+    */
+  def $110[T, O](f: (N1[T], N1[T], N0[T]) => O): Reverse[Op11[T], N0[T], O] = new Reverse[Op11[T], N0[T], O] {
+    def reverse(n: Op11[T], g: N0[T]): O = f(n.left, n.right, g)
+  }
+
+  /** more short-handed writing method for reverse mode differentiation of a binary operator.
+    * left:  order-1 Node
+    * right: order-1 Node
+    * g:     order-1 Node
+    */
+  def $111[T, O](f: (N1[T], N1[T], N1[T]) => O): Reverse[Op11[T], N1[T], O] = new Reverse[Op11[T], N1[T], O] {
+    def reverse(n: Op11[T], g: N1[T]): O = f(n.left, n.right, g)
+  }
+
+  /** more short-handed writing method for reverse mode differentiation of a binary operator.
+    * left:  order-0 Node
+    * right: order-2 Node
+    * g:     order-0 Node
+    */
+  def $020[T, O](f: (N0[T], N2[T], N0[T]) => O): Reverse[Op02[T], N0[T], O] = new Reverse[Op02[T], N0[T], O] {
+    def reverse(n: Op02[T], g: N0[T]): O = f(n.left, n.right, g)
+  }
+
+  /** more short-handed writing method for reverse mode differentiation of a binary operator.
+    * left:  order-2 Node
+    * right: order-0 Node
+    * g:     order-0 Node
+    */
+  def $200[T, O](f: (N2[T], N0[T], N0[T]) => O): Reverse[Op20[T], N0[T], O] = new Reverse[Op20[T], N0[T], O] {
+    def reverse(n: Op20[T], g: N0[T]): O = f(n.left, n.right, g)
+  }
+
+  /** more short-handed writing method for reverse mode differentiation of a binary operator.
+    * left:  order-2 Node
+    * right: order-0 Node
+    * g:     order-0 Node
+    */
+  def $220[T, O](f: (N2[T], N2[T], N0[T]) => O): Reverse[Op22[T], N0[T], O] = new Reverse[Op22[T], N0[T], O] {
+    def reverse(n: Op22[T], g: N0[T]): O = f(n.left, n.right, g)
+  }
+
+  // add
+  implicit def add000[T] = $000((l, r, g) => Add00(l.reverse(g), r.reverse(g)))
+  implicit def add001[T] = $001((l, r, g) => Add00(l.reverse(g), r.reverse(g)))
+  implicit def add002[T] = $002((l, r, g) => Add00(l.reverse(g), r.reverse(g)))
+
+  implicit def add010[T] = $010((l, r, g) => Add01(l.reverse(g), r.reverse(g)))
+  implicit def add011[T] = $011((l, r, g) => Add01(l.reverse(g), r.reverse(g)))
+
+  implicit def add100[T] = $100((l, r, g) => Add10(l.reverse(g), r.reverse(g)))
+  implicit def add101[T] = $101((l, r, g) => Add10(l.reverse(g), r.reverse(g)))
+
+  implicit def add110[T] = $110((l, r, g) => Add11(l.reverse(g), r.reverse(g)))
+  implicit def add111[T] = $111((l, r, g) => Add11(l.reverse(g), r.reverse(g)))
+
+  implicit def add020[T] = $020((l, r, g) => Add02(l.reverse(g), r.reverse(g)))
+
+  implicit def add200[T] = $200((l, r, g) => Add20(l.reverse(g), r.reverse(g)))
+
+  implicit def add220[T] = $220((l, r, g) => Add22(l.reverse(g), r.reverse(g)))
+
+  // sub
+  implicit def sub000[T] = $000((l, r, g) => Sub00(l.reverse(g), r.reverse(g)))
+  implicit def sub001[T] = $001((l, r, g) => Sub00(l.reverse(g), r.reverse(g)))
+  implicit def sub002[T] = $002((l, r, g) => Sub00(l.reverse(g), r.reverse(g)))
+
+  implicit def sub010[T] = $010((l, r, g) => Sub01(l.reverse(g), r.reverse(g)))
+  implicit def sub011[T] = $011((l, r, g) => Sub01(l.reverse(g), r.reverse(g)))
+
+  implicit def sub100[T] = $100((l, r, g) => Sub10(l.reverse(g), r.reverse(g)))
+  implicit def sub101[T] = $101((l, r, g) => Sub10(l.reverse(g), r.reverse(g)))
+
+  implicit def sub110[T] = $110((l, r, g) => Sub11(l.reverse(g), r.reverse(g)))
+  implicit def sub111[T] = $111((l, r, g) => Sub11(l.reverse(g), r.reverse(g)))
+
+  implicit def sub020[T] = $020((l, r, g) => Sub02(l.reverse(g), r.reverse(g)))
+
+  implicit def sub200[T] = $200((l, r, g) => Sub20(l.reverse(g), r.reverse(g)))
+
+  implicit def sub220[T] = $220((l, r, g) => Sub22(l.reverse(g), r.reverse(g)))
+
+  // mul
+  implicit def mul000[T] = $000((l, r, g) => Mul00(l.reverse(g), r.reverse(g)))
+  implicit def mul001[T] = $001((l, r, g) => Mul00(l.reverse(g), r.reverse(g)))
+  implicit def mul002[T] = $002((l, r, g) => Mul00(l.reverse(g), r.reverse(g)))
+
+  implicit def mul010[T] = $010((l, r, g) => Mul01(l.reverse(g), r.reverse(g)))
+  implicit def mul011[T] = $011((l, r, g) => Mul01(l.reverse(g), r.reverse(g)))
+
+  implicit def mul100[T] = $100((l, r, g) => Mul10(l.reverse(g), r.reverse(g)))
+  implicit def mul101[T] = $101((l, r, g) => Mul10(l.reverse(g), r.reverse(g)))
+
+  implicit def mul110[T] = $110((l, r, g) => Mul11(l.reverse(g), r.reverse(g)))
+  implicit def mul111[T] = $111((l, r, g) => Mul11(l.reverse(g), r.reverse(g)))
+
+  implicit def mul020[T] = $020((l, r, g) => Mul02(l.reverse(g), r.reverse(g)))
+
+  implicit def mul200[T] = $200((l, r, g) => Mul20(l.reverse(g), r.reverse(g)))
+
+  implicit def mul220[T] = $220((l, r, g) => Mul22(l.reverse(g), r.reverse(g)))
+
+  // div
+  implicit def div000[T] = $000((l, r, g) => Div00(l.reverse(g), r.reverse(g)))
+  implicit def div001[T] = $001((l, r, g) => Div00(l.reverse(g), r.reverse(g)))
+  implicit def div002[T] = $002((l, r, g) => Div00(l.reverse(g), r.reverse(g)))
+
+  implicit def div010[T] = $010((l, r, g) => Div01(l.reverse(g), r.reverse(g)))
+  implicit def div011[T] = $011((l, r, g) => Div01(l.reverse(g), r.reverse(g)))
+
+  implicit def div100[T] = $100((l, r, g) => Div10(l.reverse(g), r.reverse(g)))
+  implicit def div101[T] = $101((l, r, g) => Div10(l.reverse(g), r.reverse(g)))
+
+  implicit def div110[T] = $110((l, r, g) => Div11(l.reverse(g), r.reverse(g)))
+  implicit def div111[T] = $111((l, r, g) => Div11(l.reverse(g), r.reverse(g)))
+
+  implicit def div020[T] = $020((l, r, g) => Div02(l.reverse(g), r.reverse(g)))
+
+  implicit def div200[T] = $200((l, r, g) => Div20(l.reverse(g), r.reverse(g)))
+
+  implicit def mul220[T] = $220((l, r, g) => Mul22(l.reverse(g), r.reverse(g)))
+
 }
+

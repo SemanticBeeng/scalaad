@@ -87,185 +87,185 @@ class BinaryOpSpec[U[_], T](
 
   def derivScalarVarWrtRight(r1: Restriction = default, r2: Restriction = default): Prop = {
     forAll(sc(r1), varGen(r2)) { case (a: ScalarConstSample[U, T], b: VarSample[U, T]) =>
-      d.op(a.node, b.node).deriv(b.node) shouldBe d.derivScalarVarWrtRight(a.src, b.src)
+      d.op(a.node, b.node).forward(b.node) shouldBe d.derivScalarVarWrtRight(a.src, b.src)
     }
   }
 
   def derivScalarVarWrtUnknown(r1: Restriction = default, r2: Restriction = default, r3: Restriction = default): Prop = {
     forAll(sc(r1), varGen(r2), varGen(r3)) { case (a: ScalarConstSample[U, T], b: VarSample[U, T], c: VarSample[U, T]) =>
-      d.op(a.node, b.node).deriv(c.node) shouldBe d.derivScalarVarWrtUnknown(a.src, b.src)
+      d.op(a.node, b.node).forward(c.node) shouldBe d.derivScalarVarWrtUnknown(a.src, b.src)
     }
   }
 
   def derivContainerVarWrtRight(r1: Restriction = default, r2: Restriction = default): Prop = {
     forAll(cc(r2), varGen(r2)) { case (a: ContainerConstSample[U, T], b: VarSample[U, T])=>
-      d.op(a.node, b.node).deriv(b.node) shouldBe d.derivContainerVarWrtRight(a.src, b.src)
+      d.op(a.node, b.node).forward(b.node) shouldBe d.derivContainerVarWrtRight(a.src, b.src)
     }
   }
 
   def derivContainerVarWrtUnknown(r1: Restriction = default, r2: Restriction = default, r3: Restriction = default): Prop = {
     forAll(cc(r2), varGen(r2), varGen(r3)) { case (a: ContainerConstSample[U, T], b: VarSample[U, T], c: VarSample[U, T]) =>
-      d.op(a.node, b.node).deriv(c.node) shouldBe d.derivContainerVarWrtUnknown(a.src, b.src)
+      d.op(a.node, b.node).forward(c.node) shouldBe d.derivContainerVarWrtUnknown(a.src, b.src)
     }
   }
 
   def derivVarScalarWrtLeft(r1: Restriction = default, r2: Restriction = default): Prop = {
     forAll(varGen(r1), sc(r2)) { case (a: VarSample[U, T], b: ScalarConstSample[U, T]) =>
-      d.op(a.node, b.node).deriv(a.node) shouldBe d.derivVarScalarWrtLeft(a.src, b.src)
+      d.op(a.node, b.node).forward(a.node) shouldBe d.derivVarScalarWrtLeft(a.src, b.src)
     }
   }
 
   def derivVarScalarWrtUnknown(r1: Restriction = default, r2: Restriction = default, r3: Restriction = default): Prop = {
     forAll(varGen(r1), sc(r2), varGen(r3)) { case (a: VarSample[U, T], b: ScalarConstSample[U, T], c: VarSample[U, T]) =>
-      d.op(a.node, b.node).deriv(c.node) shouldBe d.derivVarScalarWrtUnknown(a.src, b.src)
+      d.op(a.node, b.node).forward(c.node) shouldBe d.derivVarScalarWrtUnknown(a.src, b.src)
     }
   }
 
   def derivVarContainerWrtLeft(r1: Restriction = default, r2: Restriction = default): Prop = {
     forAll(varGen(r1), cc(r2)) { case (a: VarSample[U, T], b: ContainerConstSample[U, T]) =>
-      d.op(a.node, b.node).deriv(a.node) shouldBe d.derivVarContainerWrtLeft(a.src, b.src)
+      d.op(a.node, b.node).forward(a.node) shouldBe d.derivVarContainerWrtLeft(a.src, b.src)
     }
   }
 
   def derivVarContainerWrtUnknown(r1: Restriction = default, r2: Restriction = default, r3: Restriction = default): Prop = {
     forAll(varGen(r1), cc(r2), varGen(r3)) { case (a: VarSample[U, T], b: ContainerConstSample[U, T], c: VarSample[U, T]) =>
-      d.op(a.node, b.node).deriv(c.node) shouldBe d.derivVarContainerWrtUnknown(a.src, b.src)
+      d.op(a.node, b.node).forward(c.node) shouldBe d.derivVarContainerWrtUnknown(a.src, b.src)
     }
   }
 
   def derivVarVarWrtLeft(r1: Restriction = default, r2: Restriction = default): Prop = {
     forAll(varGen(r1), varGen(r2)) { case (a: VarSample[U, T], b: VarSample[U, T])=>
-      d.op(a.node, b.node).deriv(a.node) shouldBe d.derivVarVarWrtLeft(a.src, b.src)
+      d.op(a.node, b.node).forward(a.node) shouldBe d.derivVarVarWrtLeft(a.src, b.src)
     }
   }
 
   def derivVarVarWrtRight(r1: Restriction = default, r2: Restriction = default): Prop = {
     forAll(varGen(r1), varGen(r2)) { case (a: VarSample[U, T], b: VarSample[U, T])=>
-      d.op(a.node, b.node).deriv(b.node) shouldBe d.derivVarVarWrtRight(a.src, b.src)
+      d.op(a.node, b.node).forward(b.node) shouldBe d.derivVarVarWrtRight(a.src, b.src)
     }
   }
 
   def derivVarVarWrtUnknown(r1: Restriction = default, r2: Restriction = default, r3: Restriction = default): Prop = {
     forAll(varGen(r1), varGen(r2), varGen(r3)) { case (a: VarSample[U, T], b: VarSample[U, T], c: VarSample[U, T]) =>
-      d.op(a.node, b.node).deriv(c.node) shouldBe d.derivVarVarWrtUnknown(a.src, b.src)
+      d.op(a.node, b.node).forward(c.node) shouldBe d.derivVarVarWrtUnknown(a.src, b.src)
     }
   }
 
   def derivVarVarWrtSelf(r: Restriction = default): Prop = {
     forAll(varGen(r)) { case a: VarSample[U, T] =>
-      d.op(a.node, a.node).deriv(a.node) shouldBe d.derivVarVarWrtSelf(a.src)
+      d.op(a.node, a.node).forward(a.node) shouldBe d.derivVarVarWrtSelf(a.src)
     }
   }
 
 
   def propagateScalarScalarWithNCValue(r1: Restriction = default, r2: Restriction = default, r3: Restriction = default): Prop = {
     forAll(sc(r1), sc(r2), ncv(r3)) { case (a: ScalarConstSample[U, T], b: ScalarConstSample[U, T], c: NonContainerValueSample[U, T]) =>
-      d.op(a.node, b.node).propagate(c.value) shouldBe d.propagateScalarScalarWithNCValue(a.src, b.src, c.src)
+      d.op(a.node, b.node).reverse(c.value) shouldBe d.propagateScalarScalarWithNCValue(a.src, b.src, c.src)
     }
   }
 
   def propagateScalarContainerWithNCValue(r1: Restriction = default, r2: Restriction = default, r3: Restriction = default): Prop = {
     forAll(sc(r1), cc(r2), ncv(r3)) { case (a: ScalarConstSample[U, T], b: ContainerConstSample[U, T], c: NonContainerValueSample[U, T]) =>
-      d.op(a.node, b.node).propagate(c.value) shouldBe d.propagateScalarContainerWithNCValue(a.src, b.src, c.src)
+      d.op(a.node, b.node).reverse(c.value) shouldBe d.propagateScalarContainerWithNCValue(a.src, b.src, c.src)
     }
   }
 
   def propagateScalarVarWithNCValue(r1: Restriction = default, r2: Restriction = default, r3: Restriction = default): Prop = {
     forAll(sc(r1), varGen(r2), ncv(r3)) { case (a: ScalarConstSample[U, T], b: VarSample[U, T], c: NonContainerValueSample[U, T]) =>
-      d.op(a.node, b.node).propagate(c.value) shouldBe d.propagateScalarVarWithNCValue(a.src, b.src, c.src)
+      d.op(a.node, b.node).reverse(c.value) shouldBe d.propagateScalarVarWithNCValue(a.src, b.src, c.src)
     }
   }
 
   def propagateContainerScalarWithNCValue(r1: Restriction = default, r2: Restriction = default, r3: Restriction = default): Prop = {
     forAll(cc(r1), sc(r2), ncv(r3)) { case (a: ContainerConstSample[U, T], b: ScalarConstSample[U, T], c: NonContainerValueSample[U, T]) =>
-      d.op(a.node, b.node).propagate(c.value) shouldBe d.propagateContainerScalarWithNCValue(a.src, b.src, c.src)
+      d.op(a.node, b.node).reverse(c.value) shouldBe d.propagateContainerScalarWithNCValue(a.src, b.src, c.src)
     }
   }
 
   def propagateContainerContainerWithNCValue(r1: Restriction = default, r2: Restriction = default, r3: Restriction = default): Prop = {
     forAll(cc(r1), cc(r2), ncv(r3)) { case (a: ContainerConstSample[U, T], b: ContainerConstSample[U, T], c: NonContainerValueSample[U, T]) =>
-      d.op(a.node, b.node).propagate(c.value) shouldBe d.propagateContainerContainerWithNCValue(a.src, b.src, c.src)
+      d.op(a.node, b.node).reverse(c.value) shouldBe d.propagateContainerContainerWithNCValue(a.src, b.src, c.src)
     }
   }
 
   def propagateContainerVarWithNCValue(r1: Restriction = default, r2: Restriction = default, r3: Restriction = default): Prop = {
     forAll(cc(r1), varGen(r2), ncv(r3)) { case (a: ContainerConstSample[U, T], b: VarSample[U, T], c: NonContainerValueSample[U, T]) =>
-      d.op(a.node, b.node).propagate(c.value) shouldBe d.propagateContainerVarWithNCValue(a.src, b.src, c.src)
+      d.op(a.node, b.node).reverse(c.value) shouldBe d.propagateContainerVarWithNCValue(a.src, b.src, c.src)
     }
   }
 
 
   def propagateVarScalarWithNCValue(r1: Restriction = default, r2: Restriction = default, r3: Restriction = default): Prop = {
     forAll(varGen(r1), sc(r2), ncv(r3)) { case (a: VarSample[U, T], b: ScalarConstSample[U, T], c: NonContainerValueSample[U, T]) =>
-      d.op(a.node, b.node).propagate(c.value) shouldBe d.propagateVarScalarWithNCValue(a.src, b.src, c.src)
+      d.op(a.node, b.node).reverse(c.value) shouldBe d.propagateVarScalarWithNCValue(a.src, b.src, c.src)
     }
   }
 
   def propagateVarContainerWithNCValue(r1: Restriction = default, r2: Restriction = default, r3: Restriction = default): Prop = {
     forAll(varGen(r1), cc(r2), ncv(r3)) { case (a: VarSample[U, T], b: ContainerConstSample[U, T], c: NonContainerValueSample[U, T]) =>
-      d.op(a.node, b.node).propagate(c.value) shouldBe d.propagateVarContainerWithNCValue(a.src, b.src, c.src)
+      d.op(a.node, b.node).reverse(c.value) shouldBe d.propagateVarContainerWithNCValue(a.src, b.src, c.src)
     }
   }
 
   def propagateVarVarWithNCValue(r1: Restriction = default, r2: Restriction = default, r3: Restriction = default): Prop = {
     forAll(varGen(r1), varGen(r2), ncv(r3)) { case (a: VarSample[U, T], b: VarSample[U, T], c: NonContainerValueSample[U, T]) =>
-      d.op(a.node, b.node).propagate(c.value) shouldBe d.propagateVarVarWithNCValue(a.src, b.src, c.src)
+      d.op(a.node, b.node).reverse(c.value) shouldBe d.propagateVarVarWithNCValue(a.src, b.src, c.src)
     }
   }
 
 
   def propagateScalarScalarWithCValue(r1: Restriction = default, r2: Restriction = default, r3: Restriction = default): Prop = {
     forAll(sc(r1), sc(r2), cv(r3)) { case (a: ScalarConstSample[U, T], b: ScalarConstSample[U, T], c: ContainerValueSample[U, T]) =>
-      d.op(a.node, b.node).propagate(c.value) shouldBe d.propagateScalarScalarWithCValue(a.src, b.src, c.src)
+      d.op(a.node, b.node).reverse(c.value) shouldBe d.propagateScalarScalarWithCValue(a.src, b.src, c.src)
     }
   }
 
   def propagateScalarContainerWithCValue(r1: Restriction = default, r2: Restriction = default, r3: Restriction = default): Prop = {
     forAll(sc(r1), cc(r2), cv(r3)) { case (a: ScalarConstSample[U, T], b: ContainerConstSample[U, T], c: ContainerValueSample[U, T]) =>
-      d.op(a.node, b.node).propagate(c.value) shouldBe d.propagateScalarContainerWithCValue(a.src, b.src, c.src)
+      d.op(a.node, b.node).reverse(c.value) shouldBe d.propagateScalarContainerWithCValue(a.src, b.src, c.src)
     }
   }
 
   def propagateScalarVarWithCValue(r1: Restriction = default, r2: Restriction = default, r3: Restriction = default): Prop = {
     forAll(sc(r1), varGen(r2), cv(r3)) { case (a: ScalarConstSample[U, T], b: VarSample[U, T], c: ContainerValueSample[U, T]) =>
-      d.op(a.node, b.node).propagate(c.value) shouldBe d.propagateScalarVarWithCValue(a.src, b.src, c.src)
+      d.op(a.node, b.node).reverse(c.value) shouldBe d.propagateScalarVarWithCValue(a.src, b.src, c.src)
     }
   }
 
   def propagateContainerScalarWithCValue(r1: Restriction = default, r2: Restriction = default, r3: Restriction = default): Prop = {
     forAll(cc(r1), sc(r2), cv(r3)) { case (a: ContainerConstSample[U, T], b: ScalarConstSample[U, T], c: ContainerValueSample[U, T]) =>
-      d.op(a.node, b.node).propagate(c.value) shouldBe d.propagateContainerScalarWithCValue(a.src, b.src, c.src)
+      d.op(a.node, b.node).reverse(c.value) shouldBe d.propagateContainerScalarWithCValue(a.src, b.src, c.src)
     }
   }
 
   def propagateContainerContainerWithCValue(r1: Restriction = default, r2: Restriction = default, r3: Restriction = default): Prop = {
     forAll(cc(r1), cc(r2), cv(r3)) { case (a: ContainerConstSample[U, T], b: ContainerConstSample[U, T], c: ContainerValueSample[U, T]) =>
-      d.op(a.node, b.node).propagate(c.value) shouldBe d.propagateContainerContainerWithCValue(a.src, b.src, c.src)
+      d.op(a.node, b.node).reverse(c.value) shouldBe d.propagateContainerContainerWithCValue(a.src, b.src, c.src)
     }
   }
 
   def propagateContainerVarWithCValue(r1: Restriction = default, r2: Restriction = default, r3: Restriction = default): Prop = {
     forAll(cc(r1), varGen(r2), cv(r3)) { case (a: ContainerConstSample[U, T], b: VarSample[U, T], c: ContainerValueSample[U, T]) =>
-      d.op(a.node, b.node).propagate(c.value) shouldBe d.propagateContainerVarWithCValue(a.src, b.src, c.src)
+      d.op(a.node, b.node).reverse(c.value) shouldBe d.propagateContainerVarWithCValue(a.src, b.src, c.src)
     }
   }
 
 
   def propagateVarScalarWithCValue(r1: Restriction = default, r2: Restriction = default, r3: Restriction = default): Prop = {
     forAll(varGen(r1), sc(r2), cv(r3)) { case (a: VarSample[U, T], b: ScalarConstSample[U, T], c: ContainerValueSample[U, T]) =>
-      d.op(a.node, b.node).propagate(c.value) shouldBe d.propagateVarScalarWithCValue(a.src, b.src, c.src)
+      d.op(a.node, b.node).reverse(c.value) shouldBe d.propagateVarScalarWithCValue(a.src, b.src, c.src)
     }
   }
 
   def propagateVarContainerWithCValue(r1: Restriction = default, r2: Restriction = default, r3: Restriction = default): Prop = {
     forAll(varGen(r1), cc(r2), cv(r3)) { case (a: VarSample[U, T], b: ContainerConstSample[U, T], c: ContainerValueSample[U, T]) =>
-      d.op(a.node, b.node).propagate(c.value) shouldBe d.propagateVarContainerWithCValue(a.src, b.src, c.src)
+      d.op(a.node, b.node).reverse(c.value) shouldBe d.propagateVarContainerWithCValue(a.src, b.src, c.src)
     }
   }
 
   def propagateVarVarWithCValue(r1: Restriction = default, r2: Restriction = default, r3: Restriction = default): Prop = {
     forAll(varGen(r1), varGen(r2), cv(r3)) { case (a: VarSample[U, T], b: VarSample[U, T], c: ContainerValueSample[U, T]) =>
-      d.op(a.node, b.node).propagate(c.value) shouldBe d.propagateVarVarWithCValue(a.src, b.src, c.src)
+      d.op(a.node, b.node).reverse(c.value) shouldBe d.propagateVarVarWithCValue(a.src, b.src, c.src)
     }
   }
 

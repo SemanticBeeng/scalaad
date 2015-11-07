@@ -6,7 +6,7 @@ import com.kogecoo.scalaad.value.Value
 import shapeless.Nat
 import Predef.{ any2stringadd => _, _ }
 import scala.language.higherKinds
-
+/*
 abstract class ConstBase[U[_], T, Rank <: Nat](implicit r: ValueRule[U, T]) extends Node[U, T, Rank]
 
 // TODO: use Coproducts and discriminated unions ? e.g. (data: T :+: U[T])
@@ -36,3 +36,4 @@ case class Zero[U[_], T, Rank <: Nat](data: U[T])(implicit r: ValueRule[U, T]) e
     g + Zero[U, T, Rank](data)
   }
 }
+*/

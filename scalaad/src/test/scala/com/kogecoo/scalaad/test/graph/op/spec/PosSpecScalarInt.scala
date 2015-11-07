@@ -1,6 +1,6 @@
 package com.kogecoo.scalaad.test.graph.op.spec
 
-import com.kogecoo.scalaad.graph.{Node, Pos, Scalar}
+import com.kogecoo.scalaad.graph.{Node, Pos}
 import com.kogecoo.scalaad.rule._
 import com.kogecoo.scalaad.test.helper.gen._
 import com.kogecoo.scalaad.test.helper.rule.ScalarIntCompareRule

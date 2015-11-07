@@ -28,4 +28,3 @@ case class Var[U[_], T, Rank <: Nat](data: U[T])(implicit r: ValueRule[U, T]) ex
   }
 
 }
-

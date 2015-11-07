@@ -27,7 +27,7 @@ class VarSuite extends FunSuite {
 
     a1.apply()                shouldBe Seq(3.1f, 41.5f)
     a1.deriv(a1)              shouldBe Seq(1f, 1f)
-    a1.deriv(var12_3)         shouldBe Seq(0f, 0f)
+    a1.forward(var12_3)         shouldBe Seq(0f, 0f)
     a1.propagate(value89)     shouldBe Seq(89f, 89f)
     a1.propagate(cValue10_11) shouldBe Seq(10f, 11f)
 

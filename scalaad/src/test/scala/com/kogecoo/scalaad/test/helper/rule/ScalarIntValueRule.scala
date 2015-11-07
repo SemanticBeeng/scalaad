@@ -1,6 +1,5 @@
 package com.kogecoo.scalaad.test.helper.rule
 
-import com.kogecoo.scalaad.graph.Scalar
 import com.kogecoo.scalaad.rule._
 
 
