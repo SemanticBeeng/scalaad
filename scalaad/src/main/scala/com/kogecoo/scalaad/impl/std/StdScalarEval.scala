@@ -32,11 +32,12 @@ trait StdScalarEval {
     def eval(n: N): V = n match {
 
       // Leaf nodes
-      case Var0(v)   => v.value[V]
-      case Zero0()   => 0.0
-      case Half0()   => 0.5
-      case One0()    => 1.0
-      case Const0(v) => v.value[V]
+      case Var0(v)          => v.value[V]
+      case ArbVar0(_, data) => data.get.value[V]
+      case Zero0()          => 0.0
+      case Half0()          => 0.5
+      case One0()           => 1.0
+      case Const0(v)        => v.value[V]
 
       // Unary ops
       case Pos0(v: N) => +v.eval[V]

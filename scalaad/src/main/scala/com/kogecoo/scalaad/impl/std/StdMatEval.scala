@@ -43,11 +43,12 @@ trait StdMatEval {
     def eval(n: N): V = n match {
 
       // Leaf nodes
-      case Var2(v, _)       => v.value[V]
-      case Zero2(shape)     => fillMat(0.0, shape)
-      case Half2(shape)     => fillMat(0.5, shape)
-      case One2(shape)      => fillMat(1.0, shape)
-      case Const2(v, shape) => v.value[V]
+      case Var2(v, _)                => v.value[V]
+      case ArbVar2(sig, data, shape) => data.get.value[V]
+      case Zero2(shape)              => fillMat(0.0, shape)
+      case Half2(shape)              => fillMat(0.5, shape)
+      case One2(shape)               => fillMat(1.0, shape)
+      case Const2(v, shape)          => v.value[V]
 
       // Unary ops
       case Pos2(v) => map2(v.eval[V], pos)
@@ -90,6 +91,7 @@ trait StdMatEval {
       case Pow20(l: N , r: N0) => map20[T](l.eval[V], r.eval[T], math.pow)
       case Pow22(l: N , r: N)  => map22[T](l.eval[V], r.eval[V], math.pow)
 
+      // Experimental
       case Abs2(v)                => map2[T](v.eval[V], math.abs)
       case Max02(l: N0   , r: N)  => map02[T](l.eval[T], r.eval[V], math.max)
       case Max20(l: N    , r: N0) => map20[T](l.eval[V], r.eval[T], math.max)

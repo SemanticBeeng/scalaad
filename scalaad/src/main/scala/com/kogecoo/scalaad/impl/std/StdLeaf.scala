@@ -14,6 +14,10 @@ trait StdLeaf {
     def apply(data: StdVec[Double]): Var1 = Var1(StdVector(data), Shape1(data.size))
     def apply(data: StdMat[Double]): Var2 = Var2(StdMatrix(data), Shape2(data.size, data(0).size))
 
+    // Experimental
+    def arbitrary(name: String, shape: S0): ArbVar0 = ArbVar0(name, None)
+    def arbitrary(name: String, shape: S1): ArbVar1 = ArbVar1(name, None, shape)
+    def arbitrary(name: String, shape: S2): ArbVar2 = ArbVar2(name, None, shape)
   }
 
   object Const {
@@ -22,6 +26,9 @@ trait StdLeaf {
     def apply(data: StdVec[Double]): Const1 = Const1(StdVector(data), Shape1(data.size))
     def apply(data: StdMat[Double]): Const2 = Const2(StdMatrix(data), Shape2(data.size, data(0).size))
 
+  }
+
+  object Arb {
   }
 
   implicit def fromByte(v: Byte):     Const0 = Const(v.toDouble)

@@ -32,11 +32,12 @@ object Forward {
     def forward(n: N, wrt: W): O = n match {
 
       // Leaf nodes
-      case _: Var0   => if (n == wrt) One0() else Zero0()
-      case _: Zero0  => Zero0()
-      case _: Half0  => Zero0()
-      case _: One0   => Zero0()
-      case _: Const0 => Zero0()
+      case _: Var0    => if (n == wrt) One0() else Zero0()
+      case _: ArbVar0 => if (n == wrt) One0() else Zero0()
+      case _: Zero0   => Zero0()
+      case _: Half0   => Zero0()
+      case _: One0    => Zero0()
+      case _: Const0  => Zero0()
 
       // Unary ops
       case Pos0(v) => +v.forward[W, O](wrt)
@@ -84,11 +85,12 @@ object Forward {
     def forward(n: N, wrt: W): O = n match {
 
       // Leaf nodes
-      case _: Var0   => if (n == wrt) One1(wrt) else Zero1(wrt)
-      case _: Zero0  => Zero1(wrt)
-      case _: Half0  => Zero1(wrt)
-      case _: One0   => Zero1(wrt)
-      case _: Const0 => Zero1(wrt)
+      case _: Var0    => if (n == wrt) One1(wrt) else Zero1(wrt)
+      case _: ArbVar0 => if (n == wrt) One1(wrt) else Zero1(wrt)
+      case _: Zero0   => Zero1(wrt)
+      case _: Half0   => Zero1(wrt)
+      case _: One0    => Zero1(wrt)
+      case _: Const0  => Zero1(wrt)
 
       // Unary ops
       case Pos0(v) => +v.forward[W, O](wrt)
@@ -134,11 +136,12 @@ object Forward {
     def forward(n: N, wrt: W): O = n match {
 
       // Leaf nodes
-      case _: Var0   => if (n == wrt) One2(wrt) else Zero2(wrt)
-      case _: Zero0  => Zero2(wrt)
-      case _: Half0  => Zero2(wrt)
-      case _: One0   => Zero2(wrt)
-      case _: Const0 => Zero2(wrt)
+      case _: Var0    => if (n == wrt) One2(wrt) else Zero2(wrt)
+      case _: ArbVar0 => if (n == wrt) One2(wrt) else Zero2(wrt)
+      case _: Zero0   => Zero2(wrt)
+      case _: Half0   => Zero2(wrt)
+      case _: One0    => Zero2(wrt)
+      case _: Const0  => Zero2(wrt)
 
       // Unary ops
       case Pos0(v) => +v.forward[W, O](wrt)
@@ -184,7 +187,9 @@ object Forward {
     def forward(n: N, wrt: W): O1 = n match {
 
       // Leaf nodes
-      case Var1(_, shape)   => if (n == wrt) One1(shape) else Zero1(shape)
+      case Var1(_, shape)             => if (n == wrt) One1(shape) else Zero1(shape)
+      case ArbVar1(name, data, shape) => if (n == wrt) One1(shape) else Zero1(shape)
+
       case Zero1(shape)     => Zero1(shape)
       case Half1(shape)     => Zero1(shape)
       case One1(shape)      => Zero1(shape)
@@ -244,11 +249,12 @@ object Forward {
     def forward(n: N, wrt: W): O2 = n match {
 
       // Leaf nodes
-      case v: Var1   => if (n == wrt) One2(Shape2(v, wrt)) else Zero2(Shape2(v, wrt))
-      case v: Zero1  => Zero2(Shape2(v, wrt))
-      case v: Half1  => Zero2(Shape2(v, wrt))
-      case v: One1   => Zero2(Shape2(v, wrt))
-      case v: Const1 => Zero2(Shape2(v, wrt))
+      case v: Var1    => if (n == wrt) One2(Shape2(v, wrt)) else Zero2(Shape2(v, wrt))
+      case v: ArbVar1 => if (n == wrt) One2(Shape2(v, wrt)) else Zero2(Shape2(v, wrt))
+      case v: Zero1   => Zero2(Shape2(v, wrt))
+      case v: Half1   => Zero2(Shape2(v, wrt))
+      case v: One1    => Zero2(Shape2(v, wrt))
+      case v: Const1  => Zero2(Shape2(v, wrt))
 
       // Unary ops
       case Pos1(v) => +v.forward[W, O2](wrt)
@@ -305,11 +311,12 @@ object Forward {
     def forward(n: N, wrt: W): O2 = n match {
 
       // Leaf nodes
-      case v: Var2   => if (n == wrt) One2(v) else Zero2(v)
-      case v: Zero2  => Zero2(v)
-      case v: Half2  => Zero2(v)
-      case v: One2   => Zero2(v)
-      case v: Const2 => Zero2(v)
+      case v: Var2    => if (n == wrt) One2(v) else Zero2(v)
+      case v: ArbVar2 => if (n == wrt) One2(v) else Zero2(v)
+      case v: Zero2   => Zero2(v)
+      case v: Half2   => Zero2(v)
+      case v: One2    => Zero2(v)
+      case v: Const2  => Zero2(v)
 
       // Unary ops
       case Pos2(v) => +v.forward[W, O2](wrt)

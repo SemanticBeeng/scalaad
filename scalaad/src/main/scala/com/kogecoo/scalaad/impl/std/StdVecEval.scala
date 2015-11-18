@@ -33,11 +33,12 @@ trait StdVecEval {
     def eval(n: N): V = n match {
 
       // Leaf nodes
-      case Var1(v, _)       => v.value[V]
-      case Zero1(shape: S1) => fill(0.0, shape)
-      case Half1(shape: S1) => fill(0.5, shape)
-      case One1(shape: S1)  => fill(1.0, shape)
-      case Const1(v, shape) => v.value[V]
+      case Var1(v, _)                 => v.value[V]
+      case ArbVar1(name, data, shape) => data.get.value[V]
+      case Zero1(shape: S1)           => fill(0.0, shape)
+      case Half1(shape: S1)           => fill(0.5, shape)
+      case One1(shape: S1)            => fill(1.0, shape)
+      case Const1(v, shape)           => v.value[V]
 
       // Unary ops
       case Pos1(v: N) => map1(v.eval[V], pos)

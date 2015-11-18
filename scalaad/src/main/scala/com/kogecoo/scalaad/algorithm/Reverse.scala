@@ -31,11 +31,12 @@ object Reverse {
 
     def reverse(n: N, g: G): Grad = n match {
       // Leaf nodes
-      case _: Var0   => Grad(n, g * One0())
-      case _: Zero0  => Grad.empty
-      case _: One0   => Grad.empty
-      case _: Half0  => Grad.empty
-      case _: Const0 => Grad.empty
+      case _: Var0    => Grad(n, g * One0())
+      case _: ArbVar0 => Grad(n, g * One0())
+      case _: Zero0   => Grad.empty
+      case _: One0    => Grad.empty
+      case _: Half0   => Grad.empty
+      case _: Const0  => Grad.empty
 
       // Unary ops
       case Pos0(v) => v.reverse[G](+g)
@@ -84,11 +85,12 @@ object Reverse {
     def reverse(n: N, g: G): Grad = n match {
 
       // Leaf nodes
-      case _: Var0   => Grad(n, g :* One0())
-      case _: Zero0  => Grad.empty
-      case _: Half0  => Grad.empty
-      case _: One0   => Grad.empty
-      case _: Const0 => Grad.empty
+      case _: Var0    => Grad(n, g :* One0())
+      case _: ArbVar0 => Grad(n, g :* One0())
+      case _: Zero0   => Grad.empty
+      case _: Half0   => Grad.empty
+      case _: One0    => Grad.empty
+      case _: Const0  => Grad.empty
 
       // Unary ops
       case Pos0(v) => v.reverse[G](+g)
@@ -191,11 +193,12 @@ object Reverse {
     def reverse(n: N, g: G0): Grad = n match {
 
       // Leaf nodes
-      case Var1(_, shape)   => Grad(n, g * One0())
-      case Zero1(shape)     => Grad.empty
-      case Half1(shape)     => Grad.empty
-      case One1(shape)      => Grad.empty
-      case Const1(_, shape) => Grad.empty
+      case _: Var1    => Grad(n, g * One0())
+      case _: ArbVar1 => Grad(n, g * One0())
+      case _: Zero1   => Grad.empty
+      case _: Half1   => Grad.empty
+      case _: One1    => Grad.empty
+      case _: Const1  => Grad.empty
 
       // Unary ops
       case Pos1(v) => v.reverse[G0](+g)
@@ -264,11 +267,12 @@ object Reverse {
 
     def reverse(n: N, g: G1): Grad = n match {
       // Leaf nodes
-      case Var1(_, shape)   => Grad(n, g :* One0())
-      case Zero1(shape)     => Grad.empty
-      case Half1(shape)     => Grad.empty
-      case One1(shape)      => Grad.empty
-      case Const1(_, shape) => Grad.empty
+      case _: Var1    => Grad(n, g :* One0())
+      case _: ArbVar1 => Grad(n, g :* One0())
+      case _: Zero1   => Grad.empty
+      case _: Half1   => Grad.empty
+      case _: One1    => Grad.empty
+      case _: Const1  => Grad.empty
 
       // Unary ops
       case Pos1(v) => v.reverse[G1](+g)
@@ -339,11 +343,12 @@ object Reverse {
 
     def reverse(n: N, g: G0): Grad = n match {
       // Leaf nodes
-      case Var2(_, shape)   => Grad(n, g * One0())
-      case Zero2(shape)     => Grad.empty
-      case Half2(shape)     => Grad.empty
-      case One2(shape)      => Grad.empty
-      case Const2(_, shape) => Grad.empty
+      case _: Var2    => Grad(n, g * One0())
+      case _: ArbVar2 => Grad(n, g * One0())
+      case _: Zero2   => Grad.empty
+      case _: Half2   => Grad.empty
+      case _: One2    => Grad.empty
+      case _: Const2  => Grad.empty
 
       // Unary ops
       case Pos2(v) => v.reverse[G0](+g)
@@ -414,11 +419,12 @@ object Reverse {
 
     def reverse(n: N, g: G): Grad = n match {
       // Leaf nodes
-      case Var2(_, shape)   => Grad(n, g :* One0())
-      case Zero2(shape)     => Grad.empty
-      case Half2(shape)     => Grad.empty
-      case One2(shape)      => Grad.empty
-      case Const2(_, shape) => Grad.empty
+      case _: Var2    => Grad(n, g :* One0())
+      case _: ArbVar2 => Grad(n, g :* One0())
+      case _: Zero2   => Grad.empty
+      case _: Half2   => Grad.empty
+      case _: One2    => Grad.empty
+      case _: Const2  => Grad.empty
 
       // Unary ops
       case Pos2(v) => v.reverse[G](+g)
@@ -479,9 +485,9 @@ object Reverse {
       case Max22(l, r) => Where2_2(Gt22(l, r), l, r).reverse(g)
       case Min22(l, r) => Where2_2(Lt22(l, r), l, r).reverse(g)
 
-      //case Matmul12(l, r) => l.reverse[G](Matmul22(g, r)) ++ r.reverse[G](Matmul12(l, g))
-      //case Matmul21(l, r) => l.reverse[G](Matmul21(g, r)) ++ r.reverse[G](Matmul22(l, g))
-      //case Matmul22(l, r) => l.reverse[G](Matmul22(g, r)) ++ r.reverse[G](Matmul22(l, g))
+      case Matmul12(l, r) => l.reverse[G](Matmul22(g, r)) ++ r.reverse[G](Matmul12(l, g))
+      case Matmul21(l, r) => l.reverse[G](Matmul21(g, r)) ++ r.reverse[G](Matmul22(l, g))
+      case Matmul22(l, r) => l.reverse[G](Matmul22(g, r)) ++ r.reverse[G](Matmul22(l, g))
     }
   }
 
