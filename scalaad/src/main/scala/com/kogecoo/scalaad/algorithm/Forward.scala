@@ -183,6 +183,7 @@ object Forward {
     private[this] type W = N0
     private[this] type O0 = N0
     private[this] type O1 = N1
+    private[this] type O2 = N2
 
     def forward(n: N, wrt: W): O1 = n match {
 
@@ -236,6 +237,10 @@ object Forward {
       case Abs1(v)     => Where1_1(v :> Zero0(), v.forward[W, O1](wrt), -v.forward[W, O1](wrt))
       case Max11(l, r) => Where1_1(l  > r, l.forward[W, O1](wrt), r.forward[W, O1](wrt))
       case Min11(l, r) => Where1_1(l  < r, l.forward[W, O1](wrt), r.forward[W, O1](wrt))
+
+      // Experimental
+      case Matmul12(l, r) => Matmul12(l.forward[W, O1](wrt), r) + Matmul12(l, r.forward[W, O2](wrt))
+      case Matmul21(l, r) => Matmul21(l.forward[W, O2](wrt), r) + Matmul21(l, r.forward[W, O1](wrt))
     }
   }
 
@@ -360,8 +365,7 @@ object Forward {
       case Max22(l, r) => Where2_2(l  > r, l.forward[W, O2](wrt), r.forward[W, O2](wrt))
       case Min22(l, r) => Where2_2(l  < r, l.forward[W, O2](wrt), r.forward[W, O2](wrt))
 
-      case Matmul12(l, r) => Matmul12(l.forward[W, O1](wrt), r) + Matmul12(l, r.forward[W, O2](wrt))
-      case Matmul21(l, r) => Matmul21(l.forward[W, O2](wrt), r) + Matmul21(l, r.forward[W, O1](wrt))
+      // Experimental
       case Matmul22(l, r) => Matmul22(l.forward[W, O2](wrt), r) + Matmul22(l, r.forward[W, O2](wrt))
     }
   }

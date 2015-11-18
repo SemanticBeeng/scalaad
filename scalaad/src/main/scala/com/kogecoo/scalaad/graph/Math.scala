@@ -124,10 +124,10 @@ case class L2Norm(v: N1) extends UnaryOp[S0, S1] { val shape: S0 = Shape0() }
 case class Dot11(l: N1, r: N1) extends BinaryOp[S0, S1, S1] { val shape: S0 = Shape0() }
 
 // Matmul
-case class Matmul12(l: N1, r: N2) extends BinaryOp[S2, S1, S2] {
+case class Matmul12(l: N1, r: N2) extends BinaryOp[S1, S1, S2] {
   val shape: S2 = Shape2(l.shape._1, r.shape._2)
 }
-case class Matmul21(l: N2, r: N1) extends BinaryOp[S2, S2, S1] {
+case class Matmul21(l: N2, r: N1) extends BinaryOp[S1, S2, S1] {
   val shape: S2 = Shape2(l.shape._1, r.shape._1)
 }
 case class Matmul22(l: N2, r: N2) extends BinaryOp[S2, S2, S2] {
