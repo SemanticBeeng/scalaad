@@ -1,6 +1,6 @@
 package com.kogecoo.scalaad.impl.std
 
-import com.kogecoo.scalaad.StdVec
+import com.kogecoo.scalaad.{StdTransVec, StdVec}
 import com.kogecoo.scalaad.algorithm.Eval
 import com.kogecoo.scalaad.graph._
 import com.kogecoo.scalaad.impl.std.Implicits._
@@ -24,6 +24,12 @@ trait StdVecEval {
   private[this] def mul(l: Double, r: Double): Double = l * r
   private[this] def div(l: Double, r: Double): Double = l / r
 
+  implicit val eval11_stdvec_trans_double: Eval[N1, StdTransVec[Double]] = new Eval[N1, StdTransVec[Double]] {
+    def eval(n: N1): StdTransVec[Double] = n match {
+      case Transpose1(v: N1) if !v.shape.transposed => v.eval[StdTransVec[Double]]
+    }
+  }
+
   implicit val eval11_stdvec_double: Eval[N1, StdVec[Double]] = new Eval[N1, StdVec[Double]] {
 
     private[this] type T = Double
@@ -43,6 +49,7 @@ trait StdVecEval {
       // Unary ops
       case Pos1(v: N) => map1(v.eval[V], pos)
       case Neg1(v: N) => map1(v.eval[V], neg)
+      case Transpose1(v: N) if v.shape.transposed => v.eval[StdTransVec[Double]].flatten
 
       // Binary ops
       case Add01(l: N0, r: N)  => map01[T](l.eval[T], r.eval[V], add)
@@ -81,6 +88,8 @@ trait StdVecEval {
       case Pow01(l: N0, r: N)  => map01[T](l.eval[T], r.eval[V], math.pow)
       case Pow10(l: N , r: N0) => map10[T](l.eval[V], r.eval[T], math.pow)
       case Pow11(l: N , r: N)  => map11[T](l.eval[V], r.eval[V], math.pow)
+
+      case VecFill(v: N0, s: S1) => fill(v.eval[T], s)
 
       case Abs1(v: N)          => map1[T](v.eval[V], math.abs)
       case Max01(l: N0, r: N)  => map01[T](l.eval[T], r.eval[V], math.max)

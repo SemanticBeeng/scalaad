@@ -15,8 +15,10 @@ trait BreezeVectorEval {
   private[this] type V = DenseVector[Double]
 
   implicit val eval11_breeze_trans_vector_double: Eval[N1, Transpose[V]] = new Eval[N1, Transpose[V]] {
+
     def eval(n: N1): Transpose[V] = n match {
       case Transpose1(v) => v.eval[Transpose[V]]
+
     }
   }
 

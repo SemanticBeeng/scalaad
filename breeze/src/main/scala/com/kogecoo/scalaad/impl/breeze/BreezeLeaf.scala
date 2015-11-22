@@ -42,6 +42,13 @@ trait BreezeLeaf {
   implicit def fromDenseVectorFloat(v: DenseVector[Float]): Const1 = Const(v.map(_.toDouble))
   implicit def fromDenseVector(v: DenseVector[Double]):     Const1 = Const(v)
 
+  implicit def fromTransDenseVectorByte(v: Transpose[DenseVector[Byte]]):   Const1 = Const(v.inner.map(_.toDouble))
+  implicit def fromTransDenseVectorShort(v: Transpose[DenseVector[Short]]): Const1 = Const(v.inner.map(_.toDouble))
+  implicit def fromTransDenseVectorInt(v: Transpose[DenseVector[Int]]):     Const1 = Const(v.inner.map(_.toDouble))
+  implicit def fromTransDenseVectorLong(v: Transpose[DenseVector[Long]]):   Const1 = Const(v.inner.map(_.toDouble))
+  implicit def fromTransDenseVectorFloat(v: Transpose[DenseVector[Float]]): Const1 = Const(v.inner.map(_.toDouble))
+  implicit def fromTransDenseVector(v: Transpose[DenseVector[Double]]):     Const1 = Const(v)
+
   implicit def fromDenseMatrixByte(v: DenseMatrix[Byte]):   Const2 = Const(v.map(_.toDouble))
   implicit def fromDenseMatrixShort(v: DenseMatrix[Short]): Const2 = Const(v.map(_.toDouble))
   implicit def fromDenseMatrixInt(v: DenseMatrix[Int]):     Const2 = Const(v.map(_.toDouble))

@@ -10,6 +10,6 @@ case class BreezeVector(data: DenseVector[Double], transposed: Boolean = false) 
   def toStdFloat: StdVec[Float] = toStdDouble.map(_.toFloat)
   def toStdDouble: StdVec[Double] = data.toArray.toSeq
 
-  override def shape: S1 = Shape1(data.size)
+  override def shape: S1 = Shape1(data.size, transposed)
 }
 

@@ -10,12 +10,13 @@ import scala.language.higherKinds
 class Grad(val grad: Map[Node[_ <: Shape], Node[_ <: Shape]]) {
 
   // FIXME: These are failed when grad made by order-n node with order-(m+k) adjoint.
-  def apply(node: N0): Option[N0] = grad.get(node).map(_.asInstanceOf[N0])
-  def apply(node: N1)(implicit d: DummyImplicit): Option[N1] = grad.get(node).map(_.asInstanceOf[N1])
-  def apply(node: N2)(implicit d: DummyImplicit, d2: DummyImplicit): Option[N2] = grad.get(node).map(_.asInstanceOf[N2])
+  //def apply(node: N0): Option[N0] = grad.get(node).map(_.asInstanceOf[N0])
+  //def apply(node: N1)(implicit d: DummyImplicit): Option[N1] = grad.get(node).map(_.asInstanceOf[N1])
+  //def apply(node: N2)(implicit d: DummyImplicit, d2: DummyImplicit): Option[N2] = grad.get(node).map(_.asInstanceOf[N2])
 
+  def size: Int = grad.size
   // we cannot call eval with node which extracted by higher kind method.
-  //def apply(node: Node[_ <: Shape]): Option[Node[_ <: Shape]] = grad.get(node)
+  def apply(node: Node[_ <: Shape]): Option[Node[_ <: Shape]] = grad.get(node)
 
 }
 

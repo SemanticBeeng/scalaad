@@ -80,7 +80,7 @@ trait BreezeMatrixEval {
   }
 
 
-  implicit val eval_bool11_breeze_matrix_double: Eval[B2, DenseMatrix[Boolean]] = new Eval[B2, DenseMatrix[Boolean]] {
+  implicit val eval_bool22_breeze_matrix_double: Eval[B2, DenseMatrix[Boolean]] = new Eval[B2, DenseMatrix[Boolean]] {
 
     private[this] def map20(a: DenseMatrix[Boolean], b: Boolean, op: (Boolean, Boolean) => Boolean): DenseMatrix[Boolean] = {
       a.map(op(_, b))

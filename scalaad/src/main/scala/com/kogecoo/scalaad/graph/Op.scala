@@ -1,5 +1,7 @@
 package com.kogecoo.scalaad.graph
 
+import com.kogecoo.scalaad.Shape2
+
 
 // Element-wise Add
 case class Add00(l :N0, r: N0) extends Op00
@@ -67,4 +69,15 @@ case class Neg2(v: N2) extends Op2
 case class Transpose1(v: N1) extends Op1
 case class Transpose2(v: N2) extends Op2
 
+// Experimental
+case class VecFill(override val v: N0, override val shape: S1) extends UnaryOp[S1, S0]
+case class MatFill(override val v: N0, override val shape: S2) extends UnaryOp[S2, S0]
+
+case class MatFillAcrossRow(override val v: N1, columnSize: Int) extends UnaryOp[S2, S1] {
+  override val shape: S2 = Shape2(v.shape._1, columnSize)
+}
+
+case class MatFillAcrossColumn(override val v: N1, rowSize: Int) extends UnaryOp[S2, S1] {
+  override val shape: S2 = Shape2(rowSize, v.shape._1)
+}
 

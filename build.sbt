@@ -3,11 +3,11 @@ lazy val root = project.in(file("."))
   .settings(commonSettings: _*)
   .settings(name := "scalaad-root")
   .settings(publish := { })
-  .settings(testSettings: _*)
 
 lazy val scalaad = project.in(file("scalaad"))
   .settings(commonSettings ++ commonPublishSettings:_*)
   .settings(name := "scalaad")
+  .settings(testSettings: _*)
 
 lazy val breeze = project.in(file("breeze"))
   .dependsOn(scalaad)
@@ -64,8 +64,8 @@ lazy val commonResolvers = Seq(
 
 lazy val commonLibraryDependencies = Seq(
   "com.chuusai" %% "shapeless" % "2.2.5",
-  "org.scalacheck" %% "scalacheck" % "1.12.5" % "test",
-  "org.scalatest" %% "scalatest" % "2.2.4" % "test"
+  "org.scalacheck" %% "scalacheck" % "1.13.0" % "test",
+  "org.scalatest" %% "scalatest" % "2.2.6" % "test"
 )
 
 lazy val commonPomExtra = {
@@ -83,8 +83,8 @@ lazy val commonPomExtra = {
 }
 
 lazy val testSettings = Seq(
-  testOptions          += Tests.Argument(TestFrameworks.ScalaCheck, "-verbosity", "2"),
-  testOptions          += Tests.Argument(TestFrameworks.ScalaTest, "-oDF")
+  testOptions += Tests.Argument(TestFrameworks.ScalaCheck, "-verbosity", "2"),
+  testOptions += Tests.Argument(TestFrameworks.ScalaTest, "-oDF")
 )
 
 def choosePublishTo(v: String) = {

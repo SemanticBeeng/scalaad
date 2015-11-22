@@ -2,7 +2,9 @@ package com.kogecoo.scalaad.example
 
 object Application {
 
-  def main(args: Array[String]) = {
+  def main(args: Array[String]) = { }
+
+  /*def main(args: Array[String]) = {
     scalarExample()
     breezeExample()
     nd4jExample()
@@ -19,7 +21,7 @@ object Application {
     println(z.deriv(x))  // forward-mode automatic differentiation
     println(z.deriv(y))
 
-    println(z.grad())    // reverse-mode automatic differentiation 
+    println(z.grad())    // reverse-mode automatic differentiation
     println(x.gradient)  // we can get partial differentiation through gradient after run grad()
     println(y.gradient)
   }
@@ -55,5 +57,5 @@ object Application {
     println(y.grad())
     println(x.gradient)
   }
-
+*/
 }

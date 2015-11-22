@@ -5,116 +5,153 @@ import com.kogecoo.scalaad.algorithm.Eval
 import com.kogecoo.scalaad.graph._
 import com.kogecoo.scalaad.impl.std.Implicits._
 
-import scala.reflect.ClassTag
-
 
 trait StdMatEval {
 
-  private[this] type V1[T] = StdVec[T]
-  private[this] type V2[T] = StdMat[T]
+  private[this] type T = Double
+  private[this] type V = StdVec[T]
+  private[this] type M = StdMat[T]
+  private[this] type UOp = T => T
+  private[this] type BOp = (T, T) => T
 
-  private[this] def fillMat[T: ClassTag](value: T, shape: S2): V2[T] = {
-    Seq.fill[V1[T]](shape._1)(
-      Seq.fill[T](shape._2)(value)
-    )
+  private[this] def eye(shape: S2): StdMat[Double] = {
+    (0 until shape._1).map { i =>
+      (0 until shape._2).map { j =>
+        if (i == j) 1.0 else 0.0
+      }
+    }
   }
 
-  private[this] def map1[T](v: V1[T], f: T => T): V1[T] = v.map(f(_))
-  private[this] def map2[T](v: V2[T], f: T => T): V2[T] = v.map(_.map(f(_)))
+  private[this] def map1(v: N1, f: UOp): V = v.eval[V].map(f(_))
+  private[this] def map2(v: N2, f: UOp): M = v.eval[M].map(_.map(f(_)))
 
-  private[this] def map02[T](l: T    , r: V2[T], f: (T, T) => T): V2[T] = r.map(_.map(f(l, _)))
-  private[this] def map20[T](l: V2[T], r: T    , f: (T, T) => T): V2[T] = l.map(_.map(f(_, r)))
-  private[this] def map12[T](l: V1[T], r: V2[T], f: (T, T) => T): V2[T] = r.map(l.zip(_).map { case (x, y) => f(x, y) })
-  private[this] def map21[T](l: V2[T], r: V1[T], f: (T, T) => T): V2[T] = l.map(_.zip(r).map { case (x, y) => f(x, y) })
-  private[this] def map22[T](l: V2[T], r: V2[T], f: (T, T) => T): V2[T] = l.zip(r).map { case (x, y) => x.zip(y).map { case (a, b) => f(a, b) } }
+  private[this] def map02(l: N0, r: N2, f: BOp): M = r.eval[M].map(_.map(f(l.eval[T], _)))
+  private[this] def map20(l: N2, r: N0, f: BOp): M = l.eval[M].map(_.map(f(_, r.eval[T])))
+  private[this] def map22(l: N2, r: N2, f: BOp): M = {
+    l.eval[M].zip(r.eval[M]).map { case (x, y) =>
+      x.zip(y).map { case (a, b) => f(a, b) }
+    }
+  }
 
-  private[this] def pos(v: Double): Double = +v
-  private[this] def neg(v: Double): Double = -v
-  private[this] def add(l: Double, r: Double): Double = l + r
-  private[this] def sub(l: Double, r: Double): Double = l - r
-  private[this] def mul(l: Double, r: Double): Double = l * r
-  private[this] def div(l: Double, r: Double): Double = l / r
+  private[this] def map12row(l: N1, r: N2, f: BOp): M = r.eval[M].map(l.eval[V].zip(_).map { case (x, y) => f(x, y) })
+  private[this] def map21row(l: N2, r: N1, f: BOp): M = l.eval[M].map(_.zip(r.eval[V]).map { case (x, y) => f(x, y) })
+  private[this] def map12col(l: N1, r: N2, f: BOp): M = r.eval[M].zip(l.eval[V]).map { case (y, x) => y.map(f(_, x)) }
+  private[this] def map21col(l: N2, r: N1, f: BOp): M = l.eval[M].zip(r.eval[V]).map { case (x, y) => x.map(f(_, y)) }
 
-  implicit val eval22_stdmat_double: Eval[N2, StdMat[Double]] = new Eval[N2, StdMat[Double]] {
-    private[this] type T = Double
-    private[this] type V = StdMat[T]
-    private[this] type N = N2
+  private[this] def map12(l: N1, r: N2, f: BOp): M = if (l.shape.transposed) map12row(l, r, f) else map12col(l, r, f)
+  private[this] def map21(l: N2, r: N1, f: BOp): M = if (r.shape.transposed) map21row(l, r, f) else map21col(l, r, f)
 
-    def eval(n: N): V = n match {
+  private[this] def pos(v: T): T = +v
+  private[this] def neg(v: T): T = -v
+  private[this] def add(l: T, r: T): T = l + r
+  private[this] def sub(l: T, r: T): T = l - r
+  private[this] def mul(l: T, r: T): T = l * r
+  private[this] def div(l: T, r: T): T = l / r
+
+  implicit val eval22_stdmat_double: Eval[N2, M] = new Eval[N2, M] {
+
+    def eval(n: N2): M = n match {
 
       // Leaf nodes
-      case Var2(v, _)                => v.value[V]
-      case ArbVar2(sig, data, shape) => data.get.value[V]
-      case Zero2(shape)              => fillMat(0.0, shape)
-      case Half2(shape)              => fillMat(0.5, shape)
-      case One2(shape)               => fillMat(1.0, shape)
-      case Const2(v, shape)          => v.value[V]
+      case Var2(v, _)                => v.value[M]
+      case ArbVar2(sig, data, shape) => data.get.value[M]
+      case Zero2(shape)              => Seq.fill(shape._1, shape._2)(0.0)
+      case Half2(shape)              => Seq.fill(shape._1, shape._2)(0.5)
+      case One2(shape)               => Seq.fill(shape._1, shape._2)(1.0)
+      case Const2(v, shape)          => v.value[M]
+      case Eye2(shape)               => eye(shape)
 
       // Unary ops
-      case Pos2(v) => map2(v.eval[V], pos)
-      case Neg2(v) => map2(v.eval[V], neg)
+      case Pos2(v) => map2(v, pos)
+      case Neg2(v) => map2(v, neg)
+      case Transpose2(Transpose2(v)) => v.eval[M]
+      case Transpose2(v) => { // maybe too slow
+        val m = v.eval[M]
+        val rows = m.shape._1
+        val cols = m.shape._2
+        (0 until cols).map { c =>
+          (0 until rows).map { r =>
+            m(r)(c)
+          }
+        }
+      }
 
       // Binary ops
-      case Add02(l: N0, r: N)  => map02[T](l.eval[T], r.eval[V], add)
-      case Add20(l: N , r: N0) => map20[T](l.eval[V], r.eval[T], add)
-      case Add22(l: N , r: N)  => map22[T](l.eval[V], r.eval[V], add)
+      case Add02(l: N0, r: N2) => map02(l, r, add)
+      case Add20(l: N2, r: N0) => map20(l, r, add)
+      case Add22(l: N2, r: N2) => map22(l, r, add)
 
-      case Sub02(l: N0, r: N)  => map02[T](l.eval[T], r.eval[V], sub)
-      case Sub20(l: N , r: N0) => map20[T](l.eval[V], r.eval[T], sub)
-      case Sub22(l: N , r: N)  => map22[T](l.eval[V], r.eval[V], sub)
+      case Sub02(l: N0, r: N2) => map02(l, r, sub)
+      case Sub20(l: N2, r: N0) => map20(l, r, sub)
+      case Sub22(l: N2, r: N2) => map22(l, r, sub)
 
-      case Mul02(l: N0, r: N)  => map02[T](l.eval[T], r.eval[V], mul)
-      case Mul20(l: N , r: N0) => map20[T](l.eval[V], r.eval[T], mul)
-      case Mul22(l: N , r: N)  => map22[T](l.eval[V], r.eval[V], mul)
+      case Mul02(l: N0, r: N2) => map02(l, r, mul)
+      case Mul12(l: N1, r: N2) => map12(l, r, mul)
+      case Mul20(l: N2, r: N0) => map20(l, r, mul)
+      case Mul21(l: N2, r: N1) => map21(l, r, mul)
+      case Mul22(l: N2, r: N2) => map22(l, r, mul)
 
-      case Div02(l: N0, r: N)  => map02[T](l.eval[T], r.eval[V], div)
-      case Div20(l: N , r: N0) => map20[T](l.eval[V], r.eval[T], div)
-      case Div22(l: N , r: N)  => map22[T](l.eval[V], r.eval[V], div)
+      case Div02(l: N0, r: N2) => map02(l, r, div)
+      case Div12(l: N1, r: N2) => map12(l, r, div)
+      case Div20(l: N2, r: N0) => map20(l, r, div)
+      case Div21(l: N2, r: N1) => map21(l, r, div)
+      case Div22(l: N2, r: N2) => map22(l, r, div)
 
       // Math
-      case Sin2(v) => map2(v.eval[V], math.sin)
-      case Cos2(v) => map2(v.eval[V], math.cos)
-      case Tan2(v) => map2(v.eval[V], math.tan)
+      case Sin2(v) => map2(v, math.sin)
+      case Cos2(v) => map2(v, math.cos)
+      case Tan2(v) => map2(v, math.tan)
 
-      case Asin2(v) => map2(v.eval[V], math.asin)
-      case Acos2(v) => map2(v.eval[V], math.acos)
-      case Atan2(v) => map2(v.eval[V], math.atan)
+      case Asin2(v) => map2(v, math.asin)
+      case Acos2(v) => map2(v, math.acos)
+      case Atan2(v) => map2(v, math.atan)
 
-      case Sinh2(v) => map2(v.eval[V], math.sinh)
-      case Cosh2(v) => map2(v.eval[V], math.cosh)
-      case Tanh2(v) => map2(v.eval[V], math.tanh)
+      case Sinh2(v) => map2(v, math.sinh)
+      case Cosh2(v) => map2(v, math.cosh)
+      case Tanh2(v) => map2(v, math.tanh)
 
-      case Ln2(v)              => map2(v.eval[V], math.log)
-      case Exp2(v: N)          => map2(v.eval[V], math.exp)
-      case Sqrt2(v: N)         => map2(v.eval[V], math.sqrt)
-      case Pow02(l: N0, r: N)  => map02[T](l.eval[T], r.eval[V], math.pow)
-      case Pow20(l: N , r: N0) => map20[T](l.eval[V], r.eval[T], math.pow)
-      case Pow22(l: N , r: N)  => map22[T](l.eval[V], r.eval[V], math.pow)
+      case Ln2(v)              => map2(v, math.log)
+      case Exp2(v: N2)         => map2(v, math.exp)
+      case Sqrt2(v: N2)        => map2(v, math.sqrt)
+      case Pow02(l: N0, r: N2) => map02(l, r, math.pow)
+      case Pow20(l: N2, r: N0) => map20(l, r, math.pow)
+      case Pow22(l: N2, r: N2) => map22(l, r, math.pow)
 
       // Experimental
-      case Abs2(v)                => map2[T](v.eval[V], math.abs)
-      case Max02(l: N0   , r: N)  => map02[T](l.eval[T], r.eval[V], math.max)
-      case Max20(l: N    , r: N0) => map20[T](l.eval[V], r.eval[T], math.max)
-      case Max22(l: N    , r: N)  => map22[T](l.eval[V], r.eval[V], math.max)
-      case Min02(l: N0   , r: N)  => map02[T](l.eval[T], r.eval[V], math.min)
-      case Min20(l: N    , r: N0) => map20[T](l.eval[V], r.eval[T], math.min)
-      case Min22(l: N    , r: N)  => map22[T](l.eval[V], r.eval[V], math.min)
+      case Abs2(v)             => map2(v, math.abs)
+      case Max02(l: N0, r: N2) => map02(l, r, math.max)
+      case Max20(l: N2, r: N0) => map20(l, r, math.max)
+      case Max22(l: N2, r: N2) => map22(l, r, math.max)
+      case Min02(l: N0, r: N2) => map02(l, r, math.min)
+      case Min20(l: N2, r: N0) => map20(l, r, math.min)
+      case Min22(l: N2, r: N2) => map22(l, r, math.min)
 
-      case Where0_2(cond: B0, a: N, b: N) => {
+      case Where0_2(cond: B0, a: N2, b: N2) => {
         if (cond.eval[Boolean]) a.eval[StdMat[T]] else b.eval[StdMat[T]]
       }
-      case Where1_2(cond: B1, a: N, b: N) => {
+      case Where1_2(cond: B1, a: N2, b: N2) => {
         val ae = a.eval[StdMat[T]]
         val be = b.eval[StdMat[T]]
         val ce = cond.eval[StdVec[Boolean]]
         ce.zip(ae.zip(be)).map { case (c, (x, y))  => if (c) x else y }
       }
 
-      case Where2_2(cond: B2, a: N, b: N) => {
-        val x = a.eval[V]
-        val y = b.eval[V]
+      case Where2_2(cond: B2, a: N2, b: N2) => {
+        val x = a.eval[M]
+        val y = b.eval[M]
         cond.eval[StdMat[Boolean]].zipWithIndex.map { case (r, i) =>
           r.zipWithIndex.map { case (c, j) => if (c) x(i)(j) else y(i)(j) }
+        }
+      }
+
+      case MatMul22(a: N2, b: N2) => {  //assert(a(0).size == b.size)
+        val aeval = a.eval[StdMat[T]]
+        val beval = b.eval[StdMat[T]]
+        assert(aeval.head.size == beval.size)
+        (0 until b.shape._2).map { bcolIndex =>
+          aeval.map { arow =>
+            arow.zip(beval.map(_.apply(bcolIndex))).map({ case (x, y) => x * y }).sum
+          }
         }
       }
     }
