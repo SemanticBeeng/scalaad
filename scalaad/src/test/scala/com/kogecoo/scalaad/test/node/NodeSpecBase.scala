@@ -45,9 +45,9 @@ trait NodeSpecBase {
   }
 
   def genDefaultDomain = StdValueGen(defaultMinValue, defaultMaxValue, defaultValueConstraint)
-  def genS1 = S1Gen(defaultS1SizeConstraint, defaultS1ShapeConstraint, defaultS1SizeMin, defaultS1SizeMax)
+  def genS1() = S1Gen(defaultS1SizeConstraint, defaultS1ShapeConstraint, defaultS1SizeMin, defaultS1SizeMax)
   def genS1(size: Int) = S1Gen(size, defaultS1ShapeConstraint)
-  def genS2 = S2Gen(
+  def genS2() = S2Gen(
     defaultS2RowConstraint,
     defaultS2ColConstraint,
     defaultS2ShapeConstraint,
@@ -77,6 +77,7 @@ trait NodeSpecBase {
   def one2(s2: S2): T2 = Seq.fill[Double](s2._1, s2._2)(1.0)
 
   def zero1(l1: N1): T1 = l1.toStd.zero
+  def zero1(s1: S1): T1 = Seq.fill[Double](s1._1)(0.0)
   def zero2(l2: N2): T2 = l2.toStd.zero
   def zero2(s2: S2): T2 = Seq.fill[Double](s2._1, s2._2)(0.0)
   def zero2(refRowSize: N1, refColSize: N1): T2 = zero2(Shape2(refRowSize.shape._1, refColSize.shape._1))

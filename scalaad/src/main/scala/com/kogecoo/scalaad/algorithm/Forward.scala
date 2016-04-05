@@ -40,17 +40,14 @@ object Forward {
       case _: One0    => Zero0()
       case _: Const0  => Zero0()
 
-      // Unary ops
       case Pos0(v) => +v.forward[W, O](wrt)
       case Neg0(v) => -v.forward[W, O](wrt)
 
-      // Binary ops
       case Add00(l, r) => l.forward[W, O](wrt) + r.forward[W, O](wrt)
       case Sub00(l, r) => l.forward[W, O](wrt) - r.forward[W, O](wrt)
       case Mul00(l, r) => l.forward[W, O](wrt) * r + l * r.forward[W, O](wrt)
       case Div00(l, r) => l.forward[W, O](wrt) / r - ((l * r.forward[W, O](wrt)) / (r * r))
 
-      // Math
       case Sin0(v) => v.forward[W, O](wrt) *  Cos0(v)
       case Cos0(v) => v.forward[W, O](wrt) * -Sin0(v)
       case Tan0(v) => v.forward[W, O](wrt) * (One0() + (Tan0(v) * Tan0(v)))
@@ -73,9 +70,8 @@ object Forward {
       case Max00(l, r) => Where0_0(l > r, l.forward[W, O](wrt), r.forward[W, O](wrt))
       case Min00(l, r) => Where0_0(l < r, l.forward[W, O](wrt), r.forward[W, O](wrt))
 
-      //case Dot01(l, r) => Dot01(l.forward[W, O](wrt), r)  + Dot01(l, r.forward[W, O1](wrt))
-      //case Dot10(l, r) => Dot10(l.forward[W, O1](wrt), r) + Dot10(l, r.forward[W, O](wrt))
       case Dot11(l, r) => Dot11(l.forward[W, O1](wrt), r) + Dot11(l, r.forward[W, O1](wrt))
+
     }
   }
 
@@ -87,7 +83,6 @@ object Forward {
 
     def forward(n: N, wrt: W): O = n match {
 
-      // Leaf nodes
       case _: Var0    => Zero1(wrt)
       case _: ArbVar0 => Zero1(wrt)
       case _: Zero0   => Zero1(wrt)
@@ -95,17 +90,14 @@ object Forward {
       case _: One0    => Zero1(wrt)
       case _: Const0  => Zero1(wrt)
 
-      // Unary ops
       case Pos0(v) => +v.forward[W, O](wrt)
       case Neg0(v) => -v.forward[W, O](wrt)
 
-      // Binary ops
       case Add00(l, r) => l.forward[W, O](wrt) + r.forward[W, O](wrt)
       case Sub00(l, r) => l.forward[W, O](wrt) - r.forward[W, O](wrt)
       case Mul00(l, r) => (l.forward[W, O](wrt) :* r) + (l :* r.forward[W, O](wrt))
       case Div00(l, r) => (l.forward[W, O](wrt) :/ r) - ((l :* r.forward[W, O](wrt)) :/ (r * r))
 
-      // Math
       case Sin0(v) => v.forward[W, O](wrt) :*  Cos0(v)
       case Cos0(v) => v.forward[W, O](wrt) :* -Sin0(v)
       case Tan0(v) => v.forward[W, O](wrt) :* (One0() + (Tan0(v) * Tan0(v)))
@@ -123,6 +115,7 @@ object Forward {
       case Sqrt0(v)    => v.forward[W, O](wrt)  :* (Half0() / Sqrt0(v))
       case Pow00(l, r) => (l.forward[W, O](wrt) :* (r * Pow00(l, r - One0()))) + (Ln0(l) * Pow00(l, r) :* r.forward[W, O](wrt))
 
+      // Experimental
       case Abs0(v)     => Where0_1(v > Zero0(), v.forward[W, O](wrt), -v.forward[W, O](wrt))
       case Max00(l, r) => Where0_1(l > r, l.forward[W, O](wrt), r.forward[W, O](wrt))
       case Min00(l, r) => Where0_1(l < r, l.forward[W, O](wrt), r.forward[W, O](wrt))
@@ -147,17 +140,14 @@ object Forward {
       case _: One0    => Zero2(wrt)
       case _: Const0  => Zero2(wrt)
 
-      // Unary ops
       case Pos0(v) => +v.forward[W, O](wrt)
       case Neg0(v) => -v.forward[W, O](wrt)
 
-      // Binary ops
       case Add00(l, r) => l.forward[W, O](wrt) + r.forward[W, O](wrt)
       case Sub00(l, r) => l.forward[W, O](wrt) - r.forward[W, O](wrt)
       case Mul00(l, r) => (l.forward[W, O](wrt) :* r) + (l :* r.forward[W, O](wrt))
       case Div00(l, r) => (l.forward[W, O](wrt) :/ r) - ((l :* r.forward[W, O](wrt)) :/ (r * r))
 
-      // Math
       case Sin0(v) => v.forward[W, O](wrt) :*  Cos0(v)
       case Cos0(v) => v.forward[W, O](wrt) :* -Sin0(v)
       case Tan0(v) => v.forward[W, O](wrt) :* (One0() + (Tan0(v) * Tan0(v)))
@@ -175,6 +165,7 @@ object Forward {
       case Sqrt0(v)    => v.forward[W, O](wrt)  :* (Half0() / Sqrt0(v))
       case Pow00(l, r) => (l.forward[W, O](wrt) :* (r * Pow00(l, r - One0()))) + (Ln0(l) * Pow00(l, r) :* r.forward[W, O](wrt))
 
+      // Experimental
       case Abs0(v)     => Where0_2(v > Zero0(), v.forward[W, O](wrt), -v.forward[W, O](wrt))
       case Max00(l, r) => Where0_2(l > r, l.forward[W, O](wrt), r.forward[W, O](wrt))
       case Min00(l, r) => Where0_2(l < r, l.forward[W, O](wrt), r.forward[W, O](wrt))
@@ -191,7 +182,6 @@ object Forward {
 
     def forward(n: N, wrt: W): O1 = n match {
 
-      // Leaf nodes
       case Var1(_, shape)       => Zero1(shape)
       case ArbVar1(_, _, shape) => Zero1(shape)
 
@@ -200,11 +190,9 @@ object Forward {
       case One1(shape)      => Zero1(shape)
       case Const1(_, shape) => Zero1(shape)
 
-      // Unary ops
       case Pos1(v) => +v.forward[W, O1](wrt)
       case Neg1(v) => -v.forward[W, O1](wrt)
 
-      // Binary ops
       case Add01(l, r) => l.forward[W, O0](wrt) :+ r.forward[W, O1](wrt)
       case Add10(l, r) => l.forward[W, O1](wrt) :+ r.forward[W, O0](wrt)
       case Add11(l, r) => l.forward[W, O1](wrt)  + r.forward[W, O1](wrt)
@@ -218,7 +206,6 @@ object Forward {
       case Div10(l, r) => (l.forward[W, O1](wrt) :/ r) - ((l :* r.forward[W, O0](wrt)) :/ (r * r))
       case Div11(l, r) => (l.forward[W, O1](wrt)  / r) - ((l  * r.forward[W, O1](wrt))  / (r * r))
 
-      // Math
       case Sin1(v) => v.forward[W, O1](wrt) *  Cos1(v)
       case Cos1(v) => v.forward[W, O1](wrt) * -Sin1(v)
       case Tan1(v) => v.forward[W, O1](wrt) * (One0() :+ (Tan1(v) * Tan1(v)))
@@ -238,11 +225,11 @@ object Forward {
       case Pow10(l, r) => (l.forward[W, O1](wrt)  * (r :* Pow10(l, r  - One0()))) + (Ln1(l)  * Pow10(l, r) :* r.forward[W, O0](wrt))
       case Pow11(l, r) => (l.forward[W, O1](wrt)  * (r  * Pow11(l, r :- One0()))) + (Ln1(l)  * Pow11(l, r)  * r.forward[W, O1](wrt))
 
+      // Experimental
       case Abs1(v)     => Where1_1(v :> Zero0(), v.forward[W, O1](wrt), -v.forward[W, O1](wrt))
       case Max11(l, r) => Where1_1(l  > r, l.forward[W, O1](wrt), r.forward[W, O1](wrt))
       case Min11(l, r) => Where1_1(l  < r, l.forward[W, O1](wrt), r.forward[W, O1](wrt))
 
-      // Experimental
       case MatMulR12(l, r) => MatMulR12(l.forward[W, O1](wrt), r) + MatMulR12(l, r.forward[W, O2](wrt))
       case MatMul2C1(l, r) => MatMul2C1(l.forward[W, O2](wrt), r) + MatMul2C1(l, r.forward[W, O1](wrt))
 
@@ -259,7 +246,6 @@ object Forward {
 
     def forward(n: N, wrt: W): O2 = n match {
 
-      // Leaf nodes
       case v: Var1    => if (n == wrt) Eye2(Shape2(v, v)) else Zero2(Shape2(v, wrt))
       case v: ArbVar1 => if (n == wrt) Eye2(Shape2(v, v)) else Zero2(Shape2(v, wrt))
       case v: Zero1   => Zero2(Shape2(v, wrt))
@@ -267,11 +253,9 @@ object Forward {
       case v: One1    => Zero2(Shape2(v, wrt))
       case v: Const1  => Zero2(Shape2(v, wrt))
 
-      // Unary ops
       case Pos1(v) => +v.forward[W, O2](wrt)
       case Neg1(v) => -v.forward[W, O2](wrt)
 
-      // Binary ops
       case Add01(l, r) => l.forward[W, O1](wrt) :+ r.forward[W, O2](wrt)
       case Add10(l, r) => l.forward[W, O2](wrt) :+ r.forward[W, O1](wrt)
       case Add11(l, r) => l.forward[W, O2](wrt)  + r.forward[W, O2](wrt)
@@ -285,7 +269,6 @@ object Forward {
       case Div10(l, r) => (l.forward[W, O2](wrt) :/ r) :- ((l  * r.forward[W, O1](wrt)) :/ (r * r))
       case Div11(l, r) => (l.forward[W, O2](wrt) :/ r)  - ((l :* r.forward[W, O2](wrt)) :/ (r * r))
 
-      // Math
       case Sin1(v) => v.forward[W, O2](wrt) :* Cos1(v)
       case Cos1(v) => v.forward[W, O2](wrt) :* -Sin1(v)
       case Tan1(v) => v.forward[W, O2](wrt) :* (One0() :+ (Tan1(v) * Tan1(v)))
@@ -305,10 +288,10 @@ object Forward {
       case Pow10(l, r) => (l.forward[W, O2](wrt) :* (r :* Pow10(l, r  - One0()))) :+ (Ln1(l)  * Pow10(l, r)  * r.forward[W, O1](wrt))
       case Pow11(l, r) => (l.forward[W, O2](wrt) :* (r  * Pow11(l, r :- One0())))  + (Ln1(l)  * Pow11(l, r) :* r.forward[W, O2](wrt))
 
+      // Experimental
       case Abs1(v)     => Where1_2(v :> Zero0(), v.forward[W, O2](wrt), -v.forward[W, O2](wrt))
       case Max11(l, r) => Where1_2(l  > r, l.forward[W, O2](wrt), r.forward[W, O2](wrt))
       case Min11(l, r) => Where1_2(l  < r, l.forward[W, O2](wrt), r.forward[W, O2](wrt))
-
     }
   }
 
@@ -322,7 +305,6 @@ object Forward {
 
     def forward(n: N, wrt: W): O2 = n match {
 
-      // Leaf nodes
       case v: Var2    => /*if (n == wrt) One2(v) else */ Zero2(v)
       case v: ArbVar2 => /*if (n == wrt) One2(v) else */ Zero2(v)
       case v: Zero2   => Zero2(v)
@@ -330,11 +312,9 @@ object Forward {
       case v: One2    => Zero2(v)
       case v: Const2  => Zero2(v)
 
-      // Unary ops
       case Pos2(v) => +v.forward[W, O2](wrt)
       case Neg2(v) => -v.forward[W, O2](wrt)
 
-      // Binary ops
       case Add02(l, r) => l.forward[W, O0](wrt) :+ r.forward[W, O2](wrt)
       case Add20(l, r) => l.forward[W, O2](wrt) :+ r.forward[W, O0](wrt)
       case Add22(l, r) => l.forward[W, O2](wrt)  + r.forward[W, O2](wrt)
@@ -348,7 +328,6 @@ object Forward {
       case Div20(l, r) => (l.forward[W, O2](wrt) :/ r) - ((l :* r.forward[W, O0](wrt)) :/ (r * r))
       case Div22(l, r) => (l.forward[W, O2](wrt)  / r) - ((l  * r.forward[W, O2](wrt))  / (r * r))
 
-      // Math
       case Sin2(v) => v.forward[W, O2](wrt) * Cos2(v)
       case Cos2(v) => v.forward[W, O2](wrt) * -Sin2(v)
       case Tan2(v) => v.forward[W, O2](wrt) * (One0() :+ (Tan2(v) * Tan2(v)))
@@ -374,8 +353,6 @@ object Forward {
 
       // Experimental
       case MatMul22(l, r) => MatMul22(l.forward[W, O2](wrt), r) + MatMul22(l, r.forward[W, O2](wrt))
-
-      // Experimental
       case MatMulC12(l, r) => MatMulC12(l.forward[W, O1](wrt), r) + MatMulC12(l, r.forward[W, O2](wrt))
       case MatMul2R1(l, r) => MatMul2R1(l.forward[W, O2](wrt), r) + MatMul2R1(l, r.forward[W, O1](wrt))
     }

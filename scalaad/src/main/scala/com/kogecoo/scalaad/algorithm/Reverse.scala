@@ -30,7 +30,7 @@ object Reverse {
     private[this] type G = N0
 
     def reverse(n: N, g: G): Grad = n match {
-      // Leaf nodes
+
       case _: Var0    => Grad(n, g)
       case _: ArbVar0 => Grad(n, g)
       case _: Zero0   => Grad.empty
@@ -38,17 +38,14 @@ object Reverse {
       case _: Half0   => Grad.empty
       case _: Const0  => Grad.empty
 
-      // Unary ops
       case Pos0(v) => v.reverse[G](+g)
       case Neg0(v) => v.reverse[G](-g)
 
-      // Binary ops
       case Add00(l, r) => l.reverse[G](g) ++ r.reverse[G](g)
       case Sub00(l, r) => l.reverse[G](g) ++ r.reverse[G](-g)
       case Mul00(l, r) => l.reverse[G](g * r) ++ r.reverse[G](l * g)
       case Div00(l, r) => l.reverse[G](g / r) ++ r.reverse[G]((-l * g) / (r * r))
 
-      // Math
       case Sin0(v) => v.reverse[G](g * Cos0(v))
       case Cos0(v) => v.reverse[G](-g * Sin0(v))
       case Tan0(v) => v.reverse[G](g * (One0() + (Tan0(v) * Tan0(v))))
@@ -89,7 +86,6 @@ object Reverse {
 
     def reverse(n: N, g: G): Grad = n match {
 
-      // Leaf nodes
       case _: Var0    => Grad(n, g)
       case _: ArbVar0 => Grad(n, g)
       case _: Zero0   => Grad.empty
@@ -97,17 +93,14 @@ object Reverse {
       case _: One0    => Grad.empty
       case _: Const0  => Grad.empty
 
-      // Unary ops
       case Pos0(v) => v.reverse[G](+g)
       case Neg0(v) => v.reverse[G](-g)
 
-      // Binary ops
       case Add00(l, r) => l.reverse[G](g) ++ r.reverse[G](g)
       case Sub00(l, r) => l.reverse[G](g) ++ r.reverse[G](-g)
       case Mul00(l, r) => l.reverse[G](g :* r) ++ r.reverse[G](l :* g)
       case Div00(l, r) => l.reverse[G](g :/ r) ++ r.reverse[G]((-l :* g) :/ (r * r))
 
-      // Math
       case Sin0(v) => v.reverse[G](g :* Cos0(v))
       case Cos0(v) => v.reverse[G](-g :* Sin0(v))
       case Tan0(v) => v.reverse[G](g :* (One0() + (Tan0(v) * Tan0(v))))
@@ -147,7 +140,6 @@ object Reverse {
 
     def reverse(n: N, g: G): Grad = n match {
 
-      // Leaf nodes
       case _: Var0    => Grad(n, g)
       case _: ArbVar0 => Grad(n, g)
       case _: Zero0  => Grad.empty
@@ -155,17 +147,14 @@ object Reverse {
       case _: One0   => Grad.empty
       case _: Const0 => Grad.empty
 
-      // Unary ops
       case Pos0(v) => v.reverse[G](+g)
       case Neg0(v) => v.reverse[G](-g)
 
-      // Binary ops
       case Add00(l, r) => l.reverse[G](g) ++ r.reverse[G](g)
       case Sub00(l, r) => l.reverse[G](g) ++ r.reverse[G](-g)
       case Mul00(l, r) => l.reverse[G](g :* r) ++ r.reverse[G](l :* g)
       case Div00(l, r) => l.reverse[G](g :/ r) ++ r.reverse[G]((-l :* g) :/ (r * r))
 
-      // Math
       case Sin0(v) => v.reverse[G](g :* Cos0(v))
       case Cos0(v) => v.reverse[G](-g :* Sin0(v))
       case Tan0(v) => v.reverse[G](g :* (One0() + (Tan0(v) * Tan0(v))))
@@ -202,7 +191,6 @@ object Reverse {
 
     def reverse(n: N, g: G0): Grad = n match {
 
-      // Leaf nodes
       case _: Var1    => Grad(n, g :* One1(n))
       case _: ArbVar1 => Grad(n, g :* One1(n))
       case _: Zero1   => Grad.empty
@@ -210,12 +198,10 @@ object Reverse {
       case _: One1    => Grad.empty
       case _: Const1  => Grad.empty
 
-      // Unary ops
       case Pos1(v) => v.reverse[G0](+g)
       case Neg1(v) => v.reverse[G0](-g)
       case Transpose1(v) => v.reverse[G0](g)
 
-      // Binary ops
       case Add01(l, r) => l.reverse[G0](g) ++ r.reverse[G0](g)
       case Add10(l, r) => l.reverse[G0](g) ++ r.reverse[G0](g)
       case Add11(l, r) => l.reverse[G0](g) ++ r.reverse[G0](g)
@@ -232,7 +218,6 @@ object Reverse {
       case Div10(l, r) => l.reverse[G0](g  / r) ++ r.reverse[G1](-(l :* g) :/ (r * r))
       case Div11(l, r) => l.reverse[G1](g :/ r) ++ r.reverse[G1](-(l :* g)  / (r * r))
 
-      // Math
       case Sin1(v) => v.reverse[G1](g :* Cos1(v))
       case Cos1(v) => v.reverse[G1](-g :* Sin1(v))
       case Tan1(v) => v.reverse[G1](g :* (One1(v) + (Tan1(v) * Tan1(v))))
@@ -265,7 +250,7 @@ object Reverse {
       }
 
       // Experimental
-      case VecFill(v, s) => v.reverse[G1](VecFill(g * v, s))
+      case VecFill(v, s) => v.reverse[G1](VecFill(g, s))
 
       case Abs1(v)     => Where1_1(Gt10(v, Zero0()), v, -v).reverse(g)
       case Max11(l, r) => Where1_1(Gt11(l, r), l, r).reverse(g)
@@ -280,7 +265,7 @@ object Reverse {
     private[this] type G2 = N2
 
     def reverse(n: N, g: G1): Grad = n match {
-      // Leaf nodes
+
       // FIXME: former g * N1 calculation foreach case for running shape check
       case _: Var1    => g * One1(n);  Grad(n, g)
       case _: ArbVar1 => g * One1(n);  Grad(n, g)
@@ -289,12 +274,10 @@ object Reverse {
       case _: One1    => g * Zero1(n); Grad.empty
       case _: Const1  => g * Zero1(n); Grad.empty
 
-      // Unary ops
       case Pos1(v) => v.reverse[G1](+g)
       case Neg1(v) => v.reverse[G1](-g)
       case Transpose1(v) => v.reverse[G1](g.T)
 
-      // Binary ops
       case Add01(l, r) => l.reverse[G1](g) ++ r.reverse[G1](g)
       case Add10(l, r) => l.reverse[G1](g) ++ r.reverse[G1](g)
       case Add11(l, r) => l.reverse[G1](g) ++ r.reverse[G1](g)
@@ -311,7 +294,6 @@ object Reverse {
       case Div10(l, r) => l.reverse[G1](g :/ r) ++ r.reverse[G1]((-l  * g) :/ (r * r))
       case Div11(l, r) => l.reverse[G1](g  / r) ++ r.reverse[G1]((-l  * g)  / (r * r))
 
-      // Math
       case Sin1(v) => v.reverse[G1](g * Cos1(v))
       case Cos1(v) => v.reverse[G1](-g * Sin1(v))
       case Tan1(v) => v.reverse[G1](g * (One1(v) + (Tan1(v) * Tan1(v))))
@@ -344,7 +326,7 @@ object Reverse {
       }
 
       // Experimental
-      //case VecFill(v, s) => v.reverse[G1](g * VecFill(v, s))
+      case VecFill(v, s) => v.reverse[G1](g)
 
       case Abs1(v)     => Where1_1(Gt10(v, Zero0()), v, -v).reverse(g)
       case Max11(l, r) => Where1_1(Gt11(l, r), l, r).reverse(g)
@@ -363,7 +345,7 @@ object Reverse {
     private[this] type G2 = N2
 
     def reverse(n: N, g: G2): Grad = n match {
-      // Leaf nodes
+
       // FIXME: former g * N1 calculation foreach case for running shape check
       case _: Var1    => g :* One1(n);  Grad(n, g)
       case _: ArbVar1 => g :* One1(n);  Grad(n, g)
@@ -372,12 +354,10 @@ object Reverse {
       case _: One1    => g :* Zero1(n); Grad.empty
       case _: Const1  => g :* Zero1(n); Grad.empty
 
-      // Unary ops
       case Pos1(v) => v.reverse[G2](+g)
       case Neg1(v) => v.reverse[G2](-g)
       case Transpose1(v) => v.reverse[G2](g.T)
 
-      // Binary ops
       case Add01(l, r) => l.reverse[G2](g) ++ r.reverse[G2] (g)
       case Add10(l, r) => l.reverse[G2](g) ++ r.reverse[G2](g)
       case Add11(l, r) => l.reverse[G2](g) ++ r.reverse[G2] (g)
@@ -394,7 +374,6 @@ object Reverse {
       case Div10(l, r) => l.reverse[G2](g :/ r) ++ r.reverse[G2]((-l :* g) :/ (r * r))
       case Div11(l, r) => l.reverse[G2](g :/ r) ++ r.reverse[G2]((-l :* g) :/ (r * r))
 
-      // Math
       case Sin1(v) => v.reverse[G2](g :* Cos1(v))
       case Cos1(v) => v.reverse[G2](-g :* Sin1(v))
       case Tan1(v) => v.reverse[G2](g :* (One1(v) + (Tan1(v) * Tan1(v))))
@@ -433,6 +412,8 @@ object Reverse {
 
       case MatMulR12(l, r) => l.reverse[G2](MatMul22(g, r))  ++ r.reverse[N1](MatMulR12(l, g.T))
       case MatMul2C1(l, r) => l.reverse[N1](MatMul2C1(g, r)) ++ r.reverse[G2](MatMul22(l, g.T))
+
+      case VecFill(v, s) => v.reverse[G2](g)
     }
   }
 
@@ -451,12 +432,10 @@ object Reverse {
       case _: One2    => Grad.empty
       case _: Const2  => Grad.empty
 
-      // Unary ops
       case Pos2(v) => v.reverse[G0](+g)
       case Neg2(v) => v.reverse[G0](-g)
       case Transpose2(v) => v.reverse[G0](g)
 
-      // Binary ops
       case Add02(l, r) => l.reverse[G0](g) ++ r.reverse[G0](g)
       case Add20(l, r) => l.reverse[G0](g) ++ r.reverse[G0](g)
       case Add22(l, r) => l.reverse[G0](g) ++ r.reverse[G0](g)
@@ -473,7 +452,6 @@ object Reverse {
       case Div20(l, r) => l.reverse[G0](g  / r) ++ r.reverse[G2]((-l :* g) :/ (r * r))
       case Div22(l, r) => l.reverse[G2](g :/ r) ++ r.reverse[G2]((-l :* g)  / (r * r))
 
-      // Math
       case Sin2(v) => v.reverse[G2](g :* Cos2(v))
       case Cos2(v) => v.reverse[G2](-g :* Sin2(v))
       case Tan2(v) => v.reverse[G2](g :* (One2(v.shape) + (Tan2(v) * Tan2(v))))
@@ -519,7 +497,7 @@ object Reverse {
     private[this] type G2 = N2
 
     def reverse(n: N, g: G1): Grad = n match {
-      // Leaf nodes
+
       // FIXME: former g * N2 calculation foreach case for running shape check
       case _: Var2    => g :* One2(n);  Grad(n, g)
       case _: ArbVar2 => g :* One2(n);  Grad(n, g)
@@ -528,12 +506,10 @@ object Reverse {
       case _: One2    => g :* Zero2(n); Grad.empty
       case _: Const2  => g :* Zero2(n); Grad.empty
 
-      // Unary ops
       case Pos2(v) => v.reverse[G1](+g)
       case Neg2(v) => v.reverse[G1](-g)
       case Transpose2(v) => v.reverse[G1](g.T)
 
-      // Binary ops
       case Add02(l, r) => l.reverse[G1](g) ++ r.reverse[G1](g)
       case Add20(l, r) => l.reverse[G1](g) ++ r.reverse[G1](g)
       case Add22(l, r) => l.reverse[G1](g) ++ r.reverse[G1](g)
@@ -550,7 +526,6 @@ object Reverse {
       case Div20(l, r) => l.reverse[G1](g :/ r) ++ r.reverse[G2]((-l :* g) :/ (r * r))
       case Div22(l, r) => l.reverse[G2](g :/ r) ++ r.reverse[G2]((-l :* g)  / (r * r))
 
-      // Math
       case Sin2(v) => v.reverse[G2](g :* Cos2(v))
       case Cos2(v) => v.reverse[G2](-g :* Sin2(v))
       case Tan2(v) => v.reverse[G2](g :* (One2(v.shape) + (Tan2(v) * Tan2(v))))
@@ -598,7 +573,7 @@ object Reverse {
     private[this] type G = N2
 
     def reverse(n: N, g: G): Grad = n match {
-      // Leaf nodes
+
       // FIXME: former g * N2 calculation foreach case for running shape check
       case _: Var2    => g * One2(n);  Grad(n, g)
       case _: ArbVar2 => g * One2(n);  Grad(n, g)
@@ -607,12 +582,10 @@ object Reverse {
       case _: One2    => g * Zero2(n); Grad.empty
       case _: Const2  => g * Zero2(n); Grad.empty
 
-      // Unary ops
       case Pos2(v) => v.reverse[G](+g)
       case Neg2(v) => v.reverse[G](-g)
       case Transpose2(v) => v.reverse[G](g.T)
 
-      // Binary ops
       case Add02(l, r) => l.reverse[G](g) ++ r.reverse[G](g)
       case Add20(l, r) => l.reverse[G](g) ++ r.reverse[G](g)
       case Add22(l, r) => l.reverse[G](g) ++ r.reverse[G](g)
@@ -629,7 +602,6 @@ object Reverse {
       case Div20(l, r) => l.reverse[G](g :/ r) ++ r.reverse[G]((-l  * g) :/ (r * r))
       case Div22(l, r) => l.reverse[G](g  / r) ++ r.reverse[G]((-l  * g)  / (r * r))
 
-      // Math
       case Sin2(v) => v.reverse[G](g * Cos2(v))
       case Cos2(v) => v.reverse[G](-g * Sin2(v))
       case Tan2(v) => v.reverse[G](g * (One2(v.shape) + (Tan2(v) * Tan2(v))))
