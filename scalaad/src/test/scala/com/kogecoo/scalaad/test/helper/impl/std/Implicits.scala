@@ -156,6 +156,16 @@ object Implicits {
     def div(rhs: T0): T2 = broadcast(_ / rhs)
     def colDiv(rhs: T1): T2   = columnWise(rhs, div)
     def rowDiv(rhs: T1): T2   = rowWise(rhs, div)
+
+    def matmul(rhs: T2): T2 = {
+      //assert(a.head.size == b.size)
+      (0 until rhs.shape._2).map { rcolIndex =>
+        self.map { lrow =>
+          lrow.zip(rhs.map(_.apply(rcolIndex))).map({ case (x, y) => x * y }).sum
+        }
+      }
+    }
+
   }
 
 

@@ -92,7 +92,10 @@ object Node {
 
     def unary_+(): Pos1 = Pos1(self)
     def unary_-(): Neg1 = Neg1(self)
-    def T: Transpose1 = Transpose1(self)
+    def T: N1 = self match {
+      case Transpose1(v) => v
+      case v             => Transpose1(v)
+    }
 
     def ==(rhs: N1): B1 = { check(rhs,  Eq11.toString); Eq11 (self, rhs) }
     def !=(rhs: N1): B1 = { check(rhs, Neq11.toString); Neq11(self, rhs) }
@@ -119,16 +122,20 @@ object Node {
 
   implicit class Node2Op(val self: N2) extends AnyVal {
 
-    private[this] def check(a: N2, op: String): Unit = {
-      if (self.shape != a.shape) throw new ShapeCheckException(self, a, op)
+    private[this] def check(rhs: N2, op: String): Unit = {
+      if (self.shape != rhs.shape) throw new ShapeCheckException(self, rhs, op)
     }
 
-    private[this] def check(a: N1, op: String)(implicit d: DummyImplicit): Unit = {
-      if (a.shape.transposed) {
-        if (self.shape._2 != a.shape._1) throw new ShapeCheckException(self, a, op)
+    private[this] def check(rhs: N1, op: String)(implicit d: DummyImplicit): Unit = {
+      if (rhs.shape.transposed) {
+        if (self.shape._2 != rhs.shape._1) throw new ShapeCheckException(self, rhs, op)
       } else {
-        if (self.shape._1 != a.shape._1) throw new ShapeCheckException(self, a, op)
+        if (self.shape._1 != rhs.shape._1) throw new ShapeCheckException(self, rhs, op)
       }
+    }
+
+    private[this] def matmulCheck(rhs: N2, op: String): Unit = {
+      if (self.shape._2 != rhs.shape._1) throw new ShapeCheckException(self, rhs, op)
     }
 
     def +(rhs: N2): Add22 = { check(rhs, Add22.toString); Add22(self, rhs) }
@@ -146,9 +153,14 @@ object Node {
     def :*(rhs: N1)(implicit d: DummyImplicit): Mul21 = { check(rhs, Mul21.toString); Mul21(self, rhs) }
     def :/(rhs: N1)(implicit d: DummyImplicit): Div21 = { check(rhs, Div21.toString); Div21(self, rhs) }
 
+    def matmul(rhs: N2): MatMul22 = { matmulCheck(rhs, MatMul22.toString()); MatMul22(self, rhs) }
+
     def unary_+(): Pos2 = Pos2(self)
     def unary_-(): Neg2 = Neg2(self)
-    def T: Transpose2 = Transpose2(self)
+    def T: N2 = self match {
+      case Transpose2(v) => v
+      case v             => Transpose2(v)
+    }
 
     def ==(rhs: N2): B2 = { check(rhs,  Eq22.toString);  Eq22(self, rhs) }
     def !=(rhs: N2): B2 = { check(rhs, Neq22.toString); Neq22(self, rhs) }
