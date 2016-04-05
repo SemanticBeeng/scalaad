@@ -75,7 +75,7 @@ trait StdScalarEval {
 
       case Abs0(v: N)        => math.abs(v.eval[T0])
       case Max00(l: N, r: N) => math.max(l.eval[T0], r.eval[T0])
-      case Min00(l: N, r: N) => math.max(l.eval[T0], r.eval[T0])
+      case Min00(l: N, r: N) => math.min(l.eval[T0], r.eval[T0])
 
       case Where0_0(cond: B0, a: N, b: N) => if (cond.eval[Boolean]) a.eval[T0] else b.eval[T0]
     }

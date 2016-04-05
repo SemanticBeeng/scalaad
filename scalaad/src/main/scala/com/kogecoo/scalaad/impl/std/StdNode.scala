@@ -6,7 +6,7 @@ import com.kogecoo.scalaad.graph._
 import scala.language.implicitConversions
 
 
-trait StdLeaf {
+trait StdNode {
 
   object Var {
 

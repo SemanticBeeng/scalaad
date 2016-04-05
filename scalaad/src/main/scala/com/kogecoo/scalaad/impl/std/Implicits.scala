@@ -7,6 +7,6 @@ object Implicits extends StdScalarEval
                     with StdVecValue
                     with StdMatEval
                     with StdMatValue
-                    with StdLeaf
+                    with StdNode
                     with StdMath
 
