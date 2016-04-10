@@ -1,13 +1,12 @@
 package com.kogecoo.scalaad.test.helper.impl.std
 
-import com.kogecoo.scalaad.StdVec
 import com.kogecoo.scalaad.graph._
 import com.kogecoo.scalaad.impl.std.StdVector
 import com.kogecoo.scalaad.test.helper._
 import org.scalacheck.Gen
 
 
-class StdN1Gen extends N1Gen[StdVec[Double], Double] {
+class StdN1Gen extends N1Gen[Double] {
 
   override def genVar1(shapeGen: Gen[S1], valueGen: Gen[Double]): Gen[Var1] = {
     for {

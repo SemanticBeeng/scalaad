@@ -3,7 +3,8 @@ package com.kogecoo.scalaad.impl.breeze
 
 import breeze.linalg.DenseVector
 import com.kogecoo.scalaad.graph.S1
-import com.kogecoo.scalaad.{Shape1, StdVec, Tensor1}
+import com.kogecoo.scalaad.impl.std.StdVec
+import com.kogecoo.scalaad.{Shape1, Tensor1}
 
 
 case class BreezeVector(data: DenseVector[Double], transposed: Boolean = false) extends Tensor1 {

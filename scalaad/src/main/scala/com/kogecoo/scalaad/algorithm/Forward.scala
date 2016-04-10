@@ -12,16 +12,24 @@ trait Forward[N, W, O] {
 
 }
 
-object Forward {
+/**
+  Supported combinations of Node's tensor order (shape)
 
-  // supported Tensor order combinations of Node orders:
-  // target Node, accumulated grad, (output Node is simply determined by sum of lefts)
-  // 0 0 0
-  // 0 1 1
-  // 0 2 2
-  // 1 0 1
-  // 1 1 2
-  // 2 0 2
+  1st:  Node order which will be differentiated
+  2nd:  Node order which differentiate with respect to
+  3rd:  Node order represents differentiated node (output node)
+       with 1st with respect to node with 2nd.
+       (shape of output Node is simply determined by sum of lefts)
+
+  0 0 0
+  0 1 1
+  0 2 2
+  1 0 1
+  1 1 2
+  2 0 2
+
+**/
+object Forward {
 
   implicit def forward000: Forward[N0, N0, N0] = new Forward[N0, N0, N0] {
 
@@ -66,11 +74,11 @@ object Forward {
       case Pow00(l, r) => (l.forward[W, O](wrt) * (r * Pow00(l, r - One0()))) + (Ln0(l) * Pow00(l, r) * r.forward(wrt))
 
       // Experimental
+      case Dot11(l, r) => Dot11(l.forward[W, O1](wrt), r) + Dot11(l, r.forward[W, O1](wrt))
+
       case Abs0(v)     => Where0_0(v > Zero0(), v.forward[W, O](wrt), -v.forward[W, O](wrt))
       case Max00(l, r) => Where0_0(l > r, l.forward[W, O](wrt), r.forward[W, O](wrt))
       case Min00(l, r) => Where0_0(l < r, l.forward[W, O](wrt), r.forward[W, O](wrt))
-
-      case Dot11(l, r) => Dot11(l.forward[W, O1](wrt), r) + Dot11(l, r.forward[W, O1](wrt))
 
     }
   }
@@ -305,8 +313,8 @@ object Forward {
 
     def forward(n: N, wrt: W): O2 = n match {
 
-      case v: Var2    => /*if (n == wrt) One2(v) else */ Zero2(v)
-      case v: ArbVar2 => /*if (n == wrt) One2(v) else */ Zero2(v)
+      case v: Var2    => Zero2(v)
+      case v: ArbVar2 => Zero2(v)
       case v: Zero2   => Zero2(v)
       case v: Half2   => Zero2(v)
       case v: One2    => Zero2(v)

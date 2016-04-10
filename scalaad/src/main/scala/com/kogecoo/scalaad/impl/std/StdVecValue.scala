@@ -1,7 +1,7 @@
 package com.kogecoo.scalaad.impl.std
 
 import com.kogecoo.scalaad.algorithm.Value
-import com.kogecoo.scalaad.{StdTransVec, BoolTensor1, StdVec, Tensor1}
+import com.kogecoo.scalaad.{BoolTensor1, Tensor1}
 
 
 trait StdVecValue {

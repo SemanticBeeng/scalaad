@@ -5,7 +5,7 @@ import org.scalacheck.Gen
 import org.scalacheck.Gen.oneOf
 
 
-abstract class N2Gen[T, V] {
+abstract class N2Gen[V] {
 
   def genVar2(shapeGen: Gen[S2], valueGen: Gen[V]): Gen[Var2]
 

@@ -107,18 +107,12 @@ case class Min20(l: N2, r: N0) extends Op20
 case class Min12(l: N1, r: N2) extends Op12
 case class Min21(l: N2, r: N1) extends Op21
 
-
-//case class Max1(v: N1) extends UnaryOp[S0, S1] { val shape: S0 = Shape0() }
-//case class Max2(v: N2) extends UnaryOp[S0, S2] { val shape: S0 = Shape0() }
-//case class Min1(v: N1) extends UnaryOp[S0, S1] { val shape: S0 = Shape0() }
-//case class Min2(v: N2) extends UnaryOp[S0, S2] { val shape: S0 = Shape0() }
-
 // Experimental
 
 // Norm
-// case class L0Norm(v: N1) extends UnaryOp[S0, S1] { val shape: S0 = Shape0() }
-// case class L1Norm(v: N1) extends UnaryOp[S0, S1] { val shape: S0 = Shape0() }
-// case class L2Norm(v: N1) extends UnaryOp[S0, S1] { val shape: S0 = Shape0() }
+case class L0Norm(v: N1) extends UnaryOp[S0, S1] { val shape: S0 = Shape0() }
+case class L1Norm(v: N1) extends UnaryOp[S0, S1] { val shape: S0 = Shape0() }
+case class L2Norm(v: N1) extends UnaryOp[S0, S1] { val shape: S0 = Shape0() }
 
 // Dot
 case class Dot11(l: N1, r: N1) extends BinaryOp[S0, S1, S1] { val shape: S0 = Shape0() }

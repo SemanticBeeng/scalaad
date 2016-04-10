@@ -7,7 +7,7 @@ import org.scalacheck.Gen.oneOf
 import scala.language.higherKinds
 
 
-abstract class N1Gen[T, V] {
+abstract class N1Gen[V] {
 
   def genVar1(shapeGen: Gen[S1], valueGen: Gen[V]): Gen[Var1]
 
@@ -55,11 +55,11 @@ abstract class N1Gen[T, V] {
     )
   }
 
-  final def genNonzeroNonVar1(shape: Gen[S1], valueGen: Gen[V]): Gen[N1] = {
+  final def genNonzeroNonVar1(shapeGen: Gen[S1], valueGen: Gen[V]): Gen[N1] = {
     Gen.oneOf(
-      genConst1(shape, valueGen),
-      genHalf1(shape),
-      genOne1(shape)
+      genConst1(shapeGen, valueGen),
+      genHalf1(shapeGen),
+      genOne1(shapeGen)
     )
   }
 

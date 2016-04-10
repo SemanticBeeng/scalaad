@@ -1,7 +1,8 @@
 package com.kogecoo.scalaad
 
 import com.kogecoo.scalaad.algorithm.Value
-import com.kogecoo.scalaad.graph.{ S0, S1, S2 }
+import com.kogecoo.scalaad.graph.{S0, S1, S2}
+import com.kogecoo.scalaad.impl.std.{StdMat, StdVec}
 import shapeless.Nat
 
 

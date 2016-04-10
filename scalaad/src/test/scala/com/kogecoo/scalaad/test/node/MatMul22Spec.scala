@@ -1,14 +1,15 @@
-package com.kogecoo.scalaad.test.node
+package com.kogecoo.scalaad.test.node.binary
 
 import com.kogecoo.scalaad.Shape2
 import com.kogecoo.scalaad.graph._
 import com.kogecoo.scalaad.impl.std.Implicits._
+import com.kogecoo.scalaad.test.NodeSpecBase
 import com.kogecoo.scalaad.test.helper.impl.std.Implicits._
 import com.kogecoo.scalaad.test.helper.impl.std._
 import org.scalacheck.Prop.forAll
 import org.scalacheck.{Gen, Properties}
 
-
+/*
 object MatMul22Spec extends Properties("MatMul22") with NodeSpecBase {
 
   override val defaultMinValue = Some(-1000.0)
@@ -58,7 +59,7 @@ object MatMul22Spec extends Properties("MatMul22") with NodeSpecBase {
   } yield (first, second, third)
 
   property("eval") = forAll(N2_N2) { case (a: N2, b: N2) =>
-    MatMul22(a, b).eval[T2] shouldCloseTo (a.toStd matmul b.toStd)
+    MatMul22(a, b).eval[T2] shouldCloseTo (a.toT2 matmul b.toT2)
   }
 
   property("MatMul(node2, node2) forward w.r.t node0") = forAll(N2_N2, genN0()) { case ((a, b), c) =>
@@ -71,8 +72,8 @@ object MatMul22Spec extends Properties("MatMul22") with NodeSpecBase {
   }
 
   property("MatMul(var2, nonvar2) reverse node2") = forAll(V2_NV2_N2) { case (a, b, c) =>
-    val l = c.toStd matmul b.toStd
-    val r = a.toStd matmul c.toStd
+    val l = c.toT2 matmul b.toT2
+    val r = a.toT2 matmul c.toT2
     val expect = l.zip(r).map { case (x, y) => x.zip(y).map { case (i, j) => i + j } }
 
     val g = MatMul22(a, b).reverse(c)
@@ -80,7 +81,7 @@ object MatMul22Spec extends Properties("MatMul22") with NodeSpecBase {
   }
 
   property("MatMul(nonvar2, var2) reverse node2") = forAll(NV2_V2_N2) { case (a, b, c) =>
-    val expect = a.toStd matmul c.toStd
+    val expect = a.toT2 matmul c.toT2
 
     val g = MatMul22(a, b).reverse(c)
     g(b).get.asInstanceOf[N2].eval[T2] shouldCloseTo expect
@@ -88,6 +89,7 @@ object MatMul22Spec extends Properties("MatMul22") with NodeSpecBase {
 
   property("MatMul(var2, var2) reverse node2") = forAll(V2_V2_N2) { case (a, b, c) =>
     val g = MatMul22(a, b).reverse(c)
-    g(a).get.asInstanceOf[N2].eval[T2] shouldCloseTo c.toStd.map(_.map(_ * 2))
+    g(a).get.asInstanceOf[N2].eval[T2] shouldCloseTo c.toT2.map(_.map(_ * 2))
   }
 }
+*/

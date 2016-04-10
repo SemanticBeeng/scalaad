@@ -1,7 +1,7 @@
 package com.kogecoo.scalaad.impl.std
 
 import com.kogecoo.scalaad.algorithm.Value
-import com.kogecoo.scalaad.{BoolTensor2, StdMat, Tensor2}
+import com.kogecoo.scalaad.{BoolTensor2, Tensor2}
 
 
 trait StdMatValue {

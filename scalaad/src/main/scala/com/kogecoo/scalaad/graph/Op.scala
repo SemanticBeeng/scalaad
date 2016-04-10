@@ -2,6 +2,12 @@ package com.kogecoo.scalaad.graph
 
 import com.kogecoo.scalaad.Shape2
 
+case class Elementwise11(l: N1, r: N1) extends Op11
+case class Elementwise22(l: N2, r: N2) extends Op22
+
+case class Broadcast01(l: N0, r: N1) extends Op02
+case class Broadcast02(l: N0, r: N2) extends Op02
+case class Broadcast12(l: N1, r: N2) extends Op12
 
 // Element-wise Add
 case class Add00(l :N0, r: N0) extends Op00
