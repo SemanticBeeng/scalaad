@@ -12,32 +12,32 @@ object Acos0Spec extends Properties("Acos0") with UnaryOp0SpecBase {
 
   private[this] def deriv(x: Double): Double = -1.0 / math.sqrt(1.0 - x * x)
 
-  override val defaultMinValue = Some(-1e10)
-  override val defaultMaxValue = Some( 1e10)
+  override def defaultMinValue = Some(-1e10)
+  override def defaultMaxValue = Some( 1e10)
 
   override def op(a: N0): N0 = Acos0(a)
 
   override def opStr(argStr: String): String = s"acos($argStr)"
 
-  override val genArgN0ForBase: Gen[N0] = genN0ForFunc
+  override def genArgN0ForBase: Gen[N0] = genN0ForFunc
 
-  override val genArgNV0ForBase: Gen[N0] = genNV0ForFunc
+  override def genArgNV0ForBase: Gen[N0] = genNV0ForFunc
 
-  val domain = StdValueGen(
+  def domain = StdValueGen(
     Some(-1.0),
     Some(1.0),
     (x: Double) => x != -1.0 && x != 1.0
   )
 
   // exclude One0 node
-  val genN0ForFunc: Gen[N0] = Gen.oneOf(
+  def genN0ForFunc: Gen[N0] = Gen.oneOf(
     genV0(domain),
     genConst0(domain),
     genHalf0(),
     genZero0()
   )
 
-  val genNV0ForFunc: Gen[N0]  = Gen.oneOf(
+  def genNV0ForFunc: Gen[N0]  = Gen.oneOf(
     genConst0(domain),
     genHalf0(),
     genZero0()

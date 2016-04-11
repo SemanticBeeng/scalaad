@@ -18,21 +18,21 @@ trait UnaryOp0SpecBase extends NodeSpecBase { self: Properties =>
 
   final def opWithNV0Str: String = opStr("nonvar0")
 
-  val genArgN0ForBase: Gen[N0] = genN0()
+  def genArgN0ForBase: Gen[N0] = genN0()
 
-  val genArgNV0ForBase: Gen[N0] = genNV0()
+  def genArgNV0ForBase: Gen[N0] = genNV0()
 
-  val genN0ForBase: Gen[N0] = genN0()
+  def genN0ForBase: Gen[N0] = genN0()
 
-  val genN1ForBase: Gen[N1] = genN1()
+  def genN1ForBase: Gen[N1] = genN1()
 
-  val genN2ForBase: Gen[N2] = genN2()
+  def genN2ForBase: Gen[N2] = genN2()
 
-  val genNV0ForBase: Gen[N0] = genNV0()
+  def genNV0ForBase: Gen[N0] = genNV0()
 
-  val genNV1ForBase: Gen[N1] = genNV1()
+  def genNV1ForBase: Gen[N1] = genNV1()
 
-  val genNV2ForBase: Gen[N2] = genNV2()
+  def genNV2ForBase: Gen[N2] = genNV2()
 
   property(s"$opWithN0Str forward w.r.t node0") = forAll(genArgN0ForBase, genN0ForBase) { (a: N0, b: N0) =>
     op(a).forward[N0, N0](b).eval[T0] shouldCloseTo 0.0
