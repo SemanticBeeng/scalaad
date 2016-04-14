@@ -97,3 +97,42 @@ trait UnaryOp1SpecBase extends NodeSpecBase { self: Properties =>
 
 }
 
+
+trait UnaryOp2SpecBase extends NodeSpecBase { self: Properties =>
+
+  import com.kogecoo.scalaad.impl.std.Implicits._
+  import com.kogecoo.scalaad.test.helper.impl.std.Implicits._
+
+
+  def op(a: String): String
+
+  def op(a: N2): N2
+
+  def genArgN2ForSpecBase: Gen[N2] = genN2()
+
+  def genArgNV2ForSpecBase: Gen[N2] = genNV2()
+
+  def genN0ForSpecBase: Gen[N0] = genN0()
+
+  def genArgNV2_RowEquivN1_ForSpecBase: Gen[(N2, N1)] = genNV2_RowEquivN1()
+
+  def genArgNV2_N2_ForSpecBase: Gen[(N2, N2)] = genNV2_N2()
+
+
+  property(s"${op("node2")} forward w.r.t node0") = forAll(genArgN2ForSpecBase, genN0ForSpecBase) { (a: N2, b: N0) =>
+    op(a).forward[N0, N2](b).eval[T2] shouldCloseTo zero2(a)
+  }
+
+  property(s"${op("nonvar2")} reverse node0") = forAll(genArgNV2ForSpecBase, genN0ForSpecBase) { (a: N2, b: N0) =>
+    op(a).reverse(b).size == 0
+  }
+
+  property(s"${op("nonvar2")} reverse node1") = forAll(genArgNV2_RowEquivN1_ForSpecBase) { case (a: N2, b: N1) =>
+    op(a).reverse(b).size == 0
+  }
+
+  property(s"${op("nonvar2")} reverse node2") = forAll(genArgNV2_N2_ForSpecBase) { case (a: N2, b: N2) =>
+    op(a).reverse(b).size == 0
+  }
+
+}

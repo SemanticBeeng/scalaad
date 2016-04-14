@@ -8,94 +8,86 @@ import org.scalacheck.Prop.forAll
 import org.scalacheck.{Gen, Properties}
 
 
-object Asin1Spec extends Properties("Asin1") with NodeSpecBase {
+object Asin1Spec extends Properties("Asin1") with UnaryOp1SpecBase {
 
   private[this] def deriv(x: Double): Double = 1.0 / math.sqrt(1.0 - x * x)
 
-  override val defaultMinValue = Some(-1e10)
-  override val defaultMaxValue = Some( 1e10)
+  override def defaultMinValue = Some(-1e10)
+  override def defaultMaxValue = Some( 1e10)
 
-  val domain = StdValueGen(
+  def domain = StdValueGen(
     Some(-1.0),
     Some(1.0),
     (x: Double) => x != -1.0 && x != 1.0
   )
 
   // exclude One1 node
-  val genV1ForFunc: Gen[Var1] = genV1(value = domain)
-  val genN1ForFunc: Gen[N1] = Gen.oneOf(genV1(value = domain), genConst1(value = domain), genHalf1(), genZero1())
-  val genNV1ForFunc: Gen[N1] = Gen.oneOf(genConst1(value = domain), genHalf1(), genZero1())
+  def genArgV1: Gen[Var1] = genV1(value = domain)
 
-  val genNV1ForFunc_N1: Gen[(N1, N1)] = {
-    for {
-      first  <- genNV1ForFunc
-      second <- n1gen.genNode1(first.shape, genDefaultDomain)
-    } yield (first, second)
-  }
+  def genArgN1: Gen[N1] = Gen.oneOf(genV1(value = domain),
+    genConst1(value = domain),
+    genHalf1(),
+    genZero1()
+  )
 
-  val genNV1ForFunc_N2: Gen[(N1, N2)] = {
-    for {
-      first  <- genNV1ForFunc
-      s2     =  genS2(first.shape._1)
-      second <- n2gen.genNode2(s2, genDefaultDomain)
-    } yield (first, second)
-  }
+  def genArgNV1: Gen[N1] = Gen.oneOf(genConst1(value = domain),
+    genHalf1(),
+    genZero1()
+  )
 
-  val genV1ForFunc_N1: Gen[(Var1, N1)] = {
-    for {
-      first  <- genV1ForFunc
-      second <- n1gen.genNode1(first.shape, genDefaultDomain)
-    } yield (first, second)
-  }
+  def genArgNV1_N1: Gen[(N1, N1)] = for {
+    first  <- genArgNV1
+    second <- n1gen.genNode1(first.shape, genDefaultDomain)
+  } yield (first, second)
 
-  val genV1ForFunc_N2: Gen[(Var1, N2)] = {
-    for {
-      first  <- genV1ForFunc
-      s2     =  genS2(first.shape._1)
-      second <- n2gen.genNode2(s2, genDefaultDomain)
-    } yield (first, second)
-  }
+  def genArgNV1_N2: Gen[(N1, N2)] = for {
+    first  <- genArgNV1
+    s2     =  genS2(first.shape._1)
+    second <- n2gen.genNode2(s2, genDefaultDomain)
+  } yield (first, second)
 
-  property("eval") = forAll(genN1ForFunc) { (a: N1) =>
+  def genArgV1_N1: Gen[(Var1, N1)] = for {
+    first  <- genArgV1
+    second <- n1gen.genNode1(first.shape, genDefaultDomain)
+  } yield (first, second)
+
+  def genArgV1_N2: Gen[(Var1, N2)] = for {
+    first  <- genArgV1
+    s2     =  genS2(first.shape._1)
+    second <- n2gen.genNode2(s2, genDefaultDomain)
+  } yield (first, second)
+
+  override def op(a: N1): N1 = Asin1(a)
+
+  override def op(argStr: String): String = s"asin($argStr)"
+
+  override def genArgN1ForSpecBase: Gen[N1] = genArgN1
+
+  override def genArgNV1ForSpecBase: Gen[N1] = genArgNV1
+
+  override def genArgNV1_N1_ForSpecBase: Gen[(N1, N1)] = genArgNV1_N1
+
+  override def genArgNV1_N2_ForSpecBase: Gen[(N1, N2)] = genArgNV1_N2
+
+  property("eval") = forAll(genArgN1) { (a: N1) =>
     Asin1(a).eval[T1] shouldCloseTo a.toStd.map(math.asin)
   }
 
-  property("asin(node1) forward w.r.t node0") = forAll(genN1ForFunc, genN0()) { (a: N1, b: N0) =>
-    Asin1(a).forward[N0, N1](b).eval[T1] shouldCloseTo zero1(a)
-  }
-
-  property("asin(node1) forward w.r.t node1") = forAll(genN1ForFunc, genN1()) { (a: N1, b: N1) =>
-    Asin1(a).forward[N1, N2](b).eval[T2] shouldCloseTo zero2(a, b)
-  }
-
-  property("asin(var1) forward w.r.t self") = forAll(genV1ForFunc) { (a: Var1) =>
+  property("asin(var1) forward w.r.t self") = forAll(genArgV1) { (a: Var1) =>
     Asin1(a).forward[N1, N2](a).eval[T2] shouldCloseTo diag(a.toStd.map(deriv))
   }
 
-
-  property("asin(nonvar1) reverse node0") = forAll(genNV1ForFunc, genN0()) { (a: N1, b: N0) =>
-    Asin1(a).reverse(b).size == 0
-  }
-
-  property("asin(nonvar1) reverse node1") = forAll(genNV1ForFunc_N1) { case (a: N1, b: N1) =>
-    Asin1(a).reverse(b).size == 0
-  }
-
-  property("asin(nonvar1) reverse node2") = forAll(genNV1ForFunc_N2) { case (a: N1, b: N2) =>
-    Asin1(a).reverse(b).size == 0
-  }
-
-  property("asin(var1) reverse node0") = forAll(genV1ForFunc, genN0()) { (a: Var1, b: N0) =>
+  property("asin(var1) reverse node0") = forAll(genArgV1, genN0()) { (a: Var1, b: N0) =>
     val g = Asin1(a).reverse(b)
     g(a).get.asInstanceOf[N1].eval[T1] shouldCloseTo (a.toStd.map(deriv) mul b.toStd)
   }
 
-  property("asin(var1) reverse node1") = forAll(genV1ForFunc_N1) { case (a: Var1, b: N1) =>
+  property("asin(var1) reverse node1") = forAll(genArgV1_N1) { case (a: Var1, b: N1) =>
     val g = Asin1(a).reverse(b)
     g(a).get.asInstanceOf[N1].eval[T1] shouldCloseTo (a.toStd.map(deriv) mul b.toStd)
   }
 
-  property("asin(var1) reverse node2") = forAll(genV1ForFunc_N2) { case (a: Var1, b: N2) =>
+  property("asin(var1) reverse node2") = forAll(genArgV1_N2) { case (a: Var1, b: N2) =>
     val g = Asin1(a).reverse(b)
     g(a).get.asInstanceOf[N2].eval[T2] shouldCloseTo (b.toStd colMul a.toStd.map(deriv))
   }
