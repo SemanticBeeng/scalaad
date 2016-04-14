@@ -7,7 +7,7 @@ import org.scalacheck.Gen.oneOf
 import scala.language.higherKinds
 
 
-abstract class N1Gen[T, V] {
+abstract class N1Gen[V] {
 
   def genVar1(shapeGen: Gen[S1], valueGen: Gen[V]): Gen[Var1]
 
