@@ -23,7 +23,7 @@ trait UnaryOp1SpecBase extends NodeSpecBase { self: Properties with SpecBackend 
 
   def expectReverse1(a: Var1, b: N1): T1 = elementwise1(broadcast1(a.toT1, deriv), b.toT1, mul(_, _))
 
-  def expectReverse2(a: Var1, b: N2): T2 = rowwise(b.toT2, broadcast1(a.toT1, deriv), mul(_, _))
+  def expectReverse2(a: Var1, b: N2): T2 = columnwise(b.toT2, broadcast1(a.toT1, deriv), mul(_, _))
 
 
   def genArgN1ForSpecBase: Gen[N1] = genN1()

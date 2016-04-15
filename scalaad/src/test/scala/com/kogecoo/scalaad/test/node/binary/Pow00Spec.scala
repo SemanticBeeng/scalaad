@@ -55,5 +55,6 @@ trait Pow00Spec extends BinaryOp00SpecBase { self: Properties with SpecBackend =
 
   override def genRightArgV0ForSpecBase: Gen[Var0] = genV0(expDomain)
 
+  override def genLeftRightArgV0ForSpecBase: Gen[Var0] = genV0(positiveBaseDomain)
 }
 

@@ -43,6 +43,18 @@ trait Pow11Spec extends BinaryOp11SpecBase { self: Properties with SpecBackend =
 
   override def op(a: String, b: String): String = s"pow($a, $b)"
 
+  override def genArgV1ForSpecBase: Gen[Var1] = genV1(value = positiveBaseDomain)
+
+  override def genArgV1_N1_ForSpecBase: Gen[(Var1, N1)] = for {
+    first  <- genV1(value = positiveBaseDomain)
+    second <- genN1(first.shape)
+  } yield (first, second)
+
+  override def genArgV1_N2_ForSpecBase: Gen[(Var1, N2)] = for {
+    first  <- genV1(value = positiveBaseDomain)
+    second <- genN2(genS2(first.shape))
+  } yield (first, second)
+
   override def genArgN1_ArgN1_ForSpecBase: Gen[(N1, N1)] = for {
     first  <- genNonzeroN1(value = positiveBaseDomain)
     second <- genN1(first.shape, expDomain)
@@ -50,9 +62,19 @@ trait Pow11Spec extends BinaryOp11SpecBase { self: Properties with SpecBackend =
 
   override def genArgN1_ArgN1_N1_ForSpecBase: Gen[(N1, N1, N1)] = for {
     first  <- genNonzeroN1(value = positiveBaseDomain)
-    second <- genNonzeroN1(first.shape, expDomain)
+    second <- genN1(first.shape, expDomain)
     third  <- genN1(first.shape)
   } yield (first, second, third)
+
+  override def genArgV1_ArgN1_ForSpecBase: Gen[(Var1, N1)] = for {
+    first   <- genV1(value = positiveBaseDomain)
+    second  <- genN1(first.shape, expDomain)
+  } yield (first, second)
+
+  override def genArgV1_ArgNV1_ForSpecBase: Gen[(Var1, N1)] = for {
+    first   <- genV1(value = positiveBaseDomain)
+    second  <- genNV1(first.shape, expDomain)
+  } yield (first, second)
 
   override def genArgN1_ArgV1_ForSpecBase: Gen[(N1, Var1)] = for {
     first  <- genNonzeroN1(value = positiveBaseDomain)
@@ -63,6 +85,12 @@ trait Pow11Spec extends BinaryOp11SpecBase { self: Properties with SpecBackend =
     first  <- genNonzeroNV1(value = positiveBaseDomain)
     second <- genNV1(first.shape, expDomain)
   } yield (first, second)
+
+  override def genArgV1_ArgNV1_N1_ForSpecBase: Gen[(Var1, N1, N1)] = for {
+    first  <- genV1(value = positiveBaseDomain)
+    second <- genNV1(first.shape, expDomain)
+    third  <- genN1(first.shape)
+  } yield (first, second, third)
 
   override def genArgNV1_ArgNV1_N1_ForSpecBase: Gen[(N1, N1, N1)] = for {
     first  <- genNonzeroNV1(value = positiveBaseDomain)

@@ -33,19 +33,19 @@ trait BinaryOp11SpecBase extends NodeSpecBase { self: Properties with SpecBacken
 
   def expectReverseLeft1(a: Var1, b: N1, c: N1): T1 = elementwise1(c.toT1, leftDeriv(a, b), mul)
 
-  def expectReverseLeft2(a: Var1, b: N1, c: N2): T2 = rowwise(c.toT2, leftDeriv(a, b), mul)
+  def expectReverseLeft2(a: Var1, b: N1, c: N2): T2 = columnwise(c.toT2, leftDeriv(a, b), mul)
 
   def expectReverseRight0(a: N1, b: Var1, c: N0): T1 = broadcast1(rightDeriv(a, b), (x: T0) => mul(x, c.toT0))
 
   def expectReverseRight1(a: N1, b: Var1, c: N1): T1 = elementwise1(c.toT1, rightDeriv(a, b), mul)
 
-  def expectReverseRight2(a: N1, b: Var1, c: N2): T2 = rowwise(c.toT2, rightDeriv(a, b), mul)
+  def expectReverseRight2(a: N1, b: Var1, c: N2): T2 = columnwise(c.toT2, rightDeriv(a, b), mul)
 
   def expectReverseLeftRight0(a: Var1, b: N0): T1 = broadcast1(leftRightDeriv(a), (x: T0) => mul(x, b.toT0))
 
   def expectReverseLeftRight1(a: Var1, b: N1): T1 = elementwise1(b.toT1, leftRightDeriv(a), mul)
 
-  def expectReverseLeftRight2(a: Var1, b: N2): T2 = rowwise(b.toT2, leftRightDeriv(a), mul)
+  def expectReverseLeftRight2(a: Var1, b: N2): T2 = columnwise(b.toT2, leftRightDeriv(a), mul)
 
 
   def genAdjointN0ForSpecBase: Gen[N0] = genN0()
@@ -170,7 +170,7 @@ trait BinaryOp11SpecBase extends NodeSpecBase { self: Properties with SpecBacken
   }
 
   property(s"${op("var1", "var1")} reverse node1") =
-    forAll(genArgV1_ArgN1_ForSpecBase) { case (a: Var1, b: N1) =>
+    forAll(genArgV1_N1_ForSpecBase) { case (a: Var1, b: N1) =>
       val g = op(a, a).reverse(b)
       g(a).get.asInstanceOf[N1] shouldCloseTo expectReverseLeftRight1(a, b)
   }

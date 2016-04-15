@@ -111,55 +111,55 @@ trait BinaryOp00SpecBase extends NodeSpecBase { self: Properties with SpecBacken
       op(a, b).reverse(c).size == 0
   }
 
-  property("var0 + nonvar0 reverse node0") =
+  property(s"${op("var0", "nonvar0")} reverse node0") =
     forAll(genLeftArgV0ForSpecBase, genRightArgNV0ForSpecBase, genAdjointN0ForSpecBase) { (a: Var0, b: N0, c: N0) =>
       val g = op(a, b).reverse(c)
       g(a).get.asInstanceOf[N0] shouldCloseTo expectReverseLeft0(a, b, c)
   }
 
-  property("var0 + nonvar0 reverse node1") =
+  property(s"${op("var0", "nonvar0")} reverse node1") =
     forAll(genLeftArgV0ForSpecBase, genRightArgNV0ForSpecBase, genAdjointN1ForSpecBase) { (a: Var0, b: N0, c: N1) =>
       val g = op(a, b).reverse(c)
       g(a).get.asInstanceOf[N1] shouldCloseTo expectReverseLeft1(a, b, c)
   }
 
-  property("var0 + nonvar0 reverse node2") =
+  property(s"${op("var0", "nonvar0")} reverse node2") =
     forAll(genLeftArgV0ForSpecBase, genRightArgNV0ForSpecBase, genAdjointN2ForSpecBase) { (a: Var0, b: N0, c: N2) =>
       val g = op(a, b).reverse(c)
       g(a).get.asInstanceOf[N2] shouldCloseTo expectReverseLeft2(a, b, c)
   }
 
-  property("nonvar0 + var0 reverse node0") =
+  property(s"${op("nonvar0", "var0")} reverse node0") =
     forAll(genLeftArgNV0ForSpecBase, genRightArgV0ForSpecBase, genAdjointN0ForSpecBase) { (a: N0, b: Var0, c: N0) =>
       val g = op(a, b).reverse(c)
       g(b).get.asInstanceOf[N0] shouldCloseTo expectReverseRight0(a, b, c)
   }
 
-  property("nonvar0 + var0 reverse node1") =
+  property(s"${op("nonvar0", "var0")} reverse node1") =
     forAll(genLeftArgNV0ForSpecBase, genRightArgV0ForSpecBase, genAdjointN1ForSpecBase) { (a: N0, b: Var0, c: N1) =>
       val g = op(a, b).reverse(c)
       g(b).get.asInstanceOf[N1] shouldCloseTo expectReverseRight1(a, b, c)
   }
 
-  property("nonvar0 + var0 reverse node2") =
+  property(s"${op("nonvar0", "var0")} reverse node2") =
     forAll(genLeftArgNV0ForSpecBase, genRightArgV0ForSpecBase, genAdjointN2ForSpecBase) { (a: N0, b: Var0, c: N2) =>
       val g = op(a, b).reverse(c)
       g(b).get.asInstanceOf[N2] shouldCloseTo expectReverseRight2(a, b, c)
   }
 
-  property("var0 + var0 reverse node0") =
+  property(s"${op("var0", "var0")} reverse node0") =
     forAll(genLeftRightArgV0ForSpecBase, genAdjointN0ForSpecBase) { (a: Var0, b: N0) =>
       val g = op(a, a).reverse(b)
       g(a).get.asInstanceOf[N0] shouldCloseTo expectReverseLeftRight0(a, b)
   }
 
-  property("var0 + var0 reverse node1") =
+  property(s"${op("var0", "var0")} reverse node1") =
     forAll(genLeftRightArgV0ForSpecBase, genAdjointN1ForSpecBase) { (a: Var0, b: N1) =>
       val g = op(a, a).reverse(b)
       g(a).get.asInstanceOf[N1] shouldCloseTo expectReverseLeftRight1(a, b)
   }
 
-  property("var0 + var0 reverse node2") =
+  property(s"${op("var0", "var0")} reverse node2") =
     forAll(genLeftRightArgV0ForSpecBase, genAdjointN2ForSpecBase) { (a: Var0, b: N2) =>
       val g = op(a, a).reverse(b)
       g(a).get.asInstanceOf[N2] shouldCloseTo expectReverseLeftRight2(a, b)

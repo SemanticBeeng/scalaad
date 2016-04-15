@@ -1,8 +1,8 @@
 package com.kogecoo.scalaad.test.node.unary
 
-import com.kogecoo.scalaad.graph.{Ln0, N0}
+import com.kogecoo.scalaad.graph.{Ln0, N0, Var0}
 import com.kogecoo.scalaad.test.{SpecBackend, StdSpecBackend}
-import org.scalacheck.Properties
+import org.scalacheck.{Gen, Properties}
 
 
 object StdLn0Spec extends Properties("Ln0") with Ln0Spec with StdSpecBackend {
@@ -26,6 +26,11 @@ trait Ln0Spec extends UnaryOp0SpecBase { self: Properties with SpecBackend =>
   override def op(a: N0): N0 = Ln0(a)
 
   override def op(argStr: String): String = s"ln($argStr)"
+
+
+  override def genArgN0ForSpecBase: Gen[N0] = genNonzeroN0()
+
+  override def genArgNV0ForSpecBase: Gen[N0] = genNonzeroNV0()
 
 }
 

@@ -1,11 +1,8 @@
 package com.kogecoo.scalaad.test.node.binary
 
 import com.kogecoo.scalaad.graph._
-import com.kogecoo.scalaad.impl.std.Implicits._
-import com.kogecoo.scalaad.test.{NodeSpecBase, SpecBackend, StdSpecBackend}
-import com.kogecoo.scalaad.test.helper.impl.std.Implicits._
 import com.kogecoo.scalaad.test.helper.impl.std.StdValueGen
-import org.scalacheck.Prop.forAll
+import com.kogecoo.scalaad.test.{SpecBackend, StdSpecBackend}
 import org.scalacheck.{Gen, Properties}
 
 
@@ -15,11 +12,37 @@ object StdDiv11Spec extends Properties("Div11") with Div11Spec with StdSpecBacke
 
   override def expectApplyOp(a: N1, b: N1): T1 = a.toT1.elementwise(b.toT1, _ / _)
 
+  //  FIXME: the differentiation result of (var / var) should be zero
+  // but following code doesn't produce it because of a floating-point precision issue.
+  override def expectReverseLeftRight0(a: Var1, b: N0): T1 = {
+    val x = a.toT1
+    val y = b.toT0
+    val l = broadcast1(x, div(y, _))
+    val r = elementwise1(broadcast1(x, mul(_, -y)), elementwise1(x, x, mul), div)
+    elementwise1(l, r, add)
+  }
+
+  override def expectReverseLeftRight1(a: Var1, b: N1): T1 = {
+    val x = a.toT1
+    val y = b.toT1
+    val l = elementwise1(y, x, div)
+    val r = elementwise1(x, y, (v, w) => div(-v * w, v * v))
+    elementwise1(l, r, add)
+  }
+
+  override def expectReverseLeftRight2(a: Var1, b: N2): T2 = {
+    val x = a.toT1
+    val y = b.toT2
+    val l = columnwise(y, x, div)
+    val r = columnwise(y, x, (w, v) => div(-v * w, v * v))
+    elementwise2(l, r, add)
+  }
+
   override def leftDeriv(a: T0, b: T0): T0 = 1.0 / b
 
-  override def rightDeriv(a: T0, b: T0): T0 = a / (b * b)
+  override def rightDeriv(a: T0, b: T0): T0 = -a / (b * b)
 
-  override def leftRightDeriv(a: T0): T0 = 2.0
+  override def leftRightDeriv(a: T0): T0 = leftDeriv(a, a) + rightDeriv(a, a)
 
   override def defaultMinValue = Some(-1e10)
 
@@ -39,6 +62,7 @@ trait Div11Spec extends BinaryOp11SpecBase { self: Properties with SpecBackend =
   override def op(a: N1, b: N1): N1 = Div11(a, b)
 
   override def op(a: String, b: String): String = s"$a / $b"
+
 
   override def genArgN1_ArgN1_ForSpecBase: Gen[(N1, N1)] = for {
     first  <- genN1()

@@ -21,7 +21,7 @@ trait UnaryOp2SpecBase extends NodeSpecBase { self: Properties with SpecBackend 
 
   def expectReverse0(a: Var2, b: N0): T2 = broadcast2(broadcast2(a.toT2, deriv), mul(_, b.toT0))
 
-  def expectReverse1(a: Var2, b: N1): T2 = rowwise(broadcast2(a.toT2, deriv), b.toT1, mul)
+  def expectReverse1(a: Var2, b: N1): T2 = columnwise(broadcast2(a.toT2, deriv), b.toT1, mul)
 
   def expectReverse2(a: Var2, b: N2): T2 = elementwise2(b.toT2, broadcast2(a.toT2, deriv), mul)
 
@@ -70,8 +70,8 @@ trait UnaryOp2SpecBase extends NodeSpecBase { self: Properties with SpecBackend 
 
   property(s"${op("var2")} reverse node1") = forAll(genArgV2_N1_ForSpecBase) { case (a: Var2, b: N1) =>
     val g = op(a).reverse(b)
-    val y = broadcast2(a.toT2, (x: T0) => deriv(x))
-    g(a).get.asInstanceOf[N2] shouldCloseTo  rowwise(y, b.toT1, (v: T0, w: T0) => mul(v, w))
+    val y = broadcast2(a.toT2, deriv)
+    g(a).get.asInstanceOf[N2] shouldCloseTo columnwise(y, b.toT1, mul)
   }
 
   property(s"${op("var2")} reverse node2") = forAll(genArgV2_N2_ForSpecBase) { case (a: Var2, b: N2) =>

@@ -40,6 +40,7 @@ trait StdSpecBackend extends SpecBackend {
 
   override final def add(a: T0, b: T0): T0 = a + b
   override final def mul(a: T0, b: T0): T0 = a * b
+  override final def div(a: T0, b: T0): T0 = a / b
 
   def dot(a: T1, b: T1): T0 = elementwise1(a, b, mul).sum
 

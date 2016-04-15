@@ -52,6 +52,7 @@ trait SpecBackend {
 
   def add(a: T0, b: T0): T0
   def mul(a: T0, b: T0): T0
+  def div(a: T0, b: T0): T0
 
   def n0gen: N0Gen[T0]
   def n1gen: N1Gen[T0]
