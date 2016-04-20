@@ -28,6 +28,40 @@ object Grad {
 
   def empty: Grad = new Grad(Map.empty[Node[_ <: S], Node[_ <: S]])
 
+  def where(cond: BoolNode[_ <: S], g1: Grad, g2: Grad): Grad = {
+    val keys = g1.grad.keySet | g2.grad.keySet
+    val (m: Map[Node[_ <: S], Node[_ <: S]]) = (for {
+      k <- keys
+      a =  g1.grad.get(k)
+      b =  g2.grad.get(k)
+      if a.isDefined || b.isDefined
+    } yield {
+      if (a.isDefined && b.isDefined) {
+        (k, add(a.get, b.get))
+      } else if (a.isDefined) {
+        (k, a.get)
+      } else {
+        (k, b.get)
+      }
+    }).toMap
+    new Grad(m)
+  }
+
+  private[this] def makeWhere(cond: BoolNode[_ <: S], n1: Node[_ <: S], n2: Node[_ <: S]): Node[_ <: S] = {
+    val n = (cond, cond.shape, n1, n1.shape, n2, n2.shape) match {
+      // instead of a.asInstanceOf[N0]
+      case (a: B0 @unchecked, _: S0, b: N0 @unchecked, _: S0, c: N0 @unchecked, _: S0) => Where0_0(a, b, c)
+      case (a: B0 @unchecked, _: S0, b: N1 @unchecked, _: S1, c: N1 @unchecked, _: S1) => Where0_1(a, b, c)
+      case (a: B0 @unchecked, _: S0, b: N2 @unchecked, _: S2, c: N2 @unchecked, _: S2) => Where0_2(a, b, c)
+      case (a: B1 @unchecked, _: S1, b: N0 @unchecked, _: S0, c: N0 @unchecked, _: S0) => Where1_0(a, b, c)
+      case (a: B1 @unchecked, _: S1, b: N1 @unchecked, _: S1, c: N1 @unchecked, _: S1) => Where1_1(a, b, c)
+      case (a: B1 @unchecked, _: S1, b: N2 @unchecked, _: S2, c: N2 @unchecked, _: S2) => Where1_2(a, b, c)
+      case (a: B2 @unchecked, _: S2, b: N0 @unchecked, _: S0, c: N0 @unchecked, _: S0) => Where2_0(a, b, c)
+      case (a: B2 @unchecked, _: S2, b: N1 @unchecked, _: S1, c: N1 @unchecked, _: S1) => Where2_1(a, b, c)
+      case (a: B2 @unchecked, _: S2, b: N2 @unchecked, _: S2, c: N2 @unchecked, _: S2) => Where2_2(a, b, c)
+    }
+  }
+
   implicit class GradOp(val self: Grad) extends AnyVal {
     def ++(other: Grad): Grad = {
       val keys = self.grad.keySet | other.grad.keySet
