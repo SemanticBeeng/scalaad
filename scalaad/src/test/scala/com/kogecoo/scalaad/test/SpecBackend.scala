@@ -1,5 +1,6 @@
 package com.kogecoo.scalaad.test
 
+import com.kogecoo.scalaad.Shape2
 import com.kogecoo.scalaad.graph.{S1, S2}
 import com.kogecoo.scalaad.test.helper.{N0Gen, N1Gen, N2Gen}
 import org.scalacheck.Prop.BooleanOperators
@@ -23,6 +24,7 @@ trait SpecBackend {
 
   def diag(v: T0, size: Int): T2
   def diag(v: T1): T2
+  def diag(v: T0, s: Shape2): T2
 
   def genValue(maybeMin: Option[T0], maybeMax: Option[T0], constraint: T0 => Boolean): Gen[T0]
 
@@ -53,6 +55,12 @@ trait SpecBackend {
   def add(a: T0, b: T0): T0
   def mul(a: T0, b: T0): T0
   def div(a: T0, b: T0): T0
+
+  def dot(a: T1, b: T1): T0
+  def matmul(a: T2, b: T2): T2
+
+  def sum1(a: T1): T0
+  def sum2(a: T2): T0
 
   def n0gen: N0Gen[T0]
   def n1gen: N1Gen[T0]

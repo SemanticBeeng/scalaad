@@ -11,7 +11,7 @@ object StdAbs0Spec extends Properties("Abs0") with Abs0Spec with StdSpecBackend 
 
   override def expectApplyOp(a: N0): T0 = math.abs(a.toT0)
 
-  override def deriv(a: T0): T0 = 1.0
+  override def deriv(a: T0): T0 = if (a > 0.0) 1.0 else -1.0
 
 }
 

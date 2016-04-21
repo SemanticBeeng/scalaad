@@ -1,7 +1,7 @@
 package com.kogecoo.scalaad.impl.std
 
-import com.kogecoo.scalaad.{Tensor1, Shape1, StdVec}
 import com.kogecoo.scalaad.graph.S1
+import com.kogecoo.scalaad.{Shape1, Tensor1}
 
 
 case class StdVector(data: StdVec[Double], transposed: Boolean=false) extends Tensor1 {

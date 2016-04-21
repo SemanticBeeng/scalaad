@@ -1,21 +1,22 @@
 package com.kogecoo.scalaad.test
 
+import com.kogecoo.scalaad.Shape2
 import com.kogecoo.scalaad.graph.{S1, S2}
-import com.kogecoo.scalaad.test.helper.impl.std._
+import com.kogecoo.scalaad.impl.std.StdUtil
+import com.kogecoo.scalaad.impl.std.Implicits._
+import com.kogecoo.scalaad.test.helper.impl.std.{StdN0Gen, StdN1Gen, StdN2Gen, StdValueGen}
 import com.kogecoo.scalaad.test.helper.{N0Gen, N1Gen, N2Gen}
-import com.kogecoo.scalaad.{StdMat, StdVec}
 import org.scalacheck.Prop.BooleanOperators
 import org.scalacheck.{Gen, Prop}
 
 
 trait StdSpecBackend extends SpecBackend {
 
-  import com.kogecoo.scalaad.impl.std.Implicits._
   import com.kogecoo.scalaad.test.helper.impl.std.Implicits._
 
-  override final type T0  = Double
-  override final type T1  = StdVec[T0]
-  override final type T2  = StdMat[T0]
+  override final type T0 = StdUtil.T0
+  override final type T1 = StdUtil.T1
+  override final type T2 = StdUtil.T2
 
   override final def shapeOf(a: T1): S1 = StdUtil.shapeOf(a)
   override final def shapeOf(a: T2): S2 = StdUtil.shapeOf(a)
@@ -28,6 +29,7 @@ trait StdSpecBackend extends SpecBackend {
 
   override final def diag(v: T0, size: Int): T2 = StdUtil.diag(v, size)
   override final def diag(v: T1): T2            = StdUtil.diag(v)
+  override final def diag(v: T0, s: Shape2): T2 = StdUtil.diag(v, s)
 
   override final def broadcast1(a: T1, f: T0 => T0): T1 = a.broadcast(f)
   override final def broadcast2(a: T2, f: T0 => T0): T2 = a.broadcast(f)
@@ -42,11 +44,14 @@ trait StdSpecBackend extends SpecBackend {
   override final def mul(a: T0, b: T0): T0 = a * b
   override final def div(a: T0, b: T0): T0 = a / b
 
-  def dot(a: T1, b: T1): T0 = elementwise1(a, b, mul).sum
+  override final def sum1(a: T1): T0 = a.sum
+  override final def sum2(a: T2): T0 = a.map(_.sum).sum
 
-  def matmul(a: T2, b: T2): T2 = {
+  override def dot(a: T1, b: T1): T0 = elementwise1(a, b, mul).sum
+
+  override def matmul(a: T2, b: T2): T2 = {
     //assert(a.head.size == b.size)
-    Seq.range(0, b.shape._2).map { rcolIndex =>
+    Seq.range(0, StdUtil.shapeOf(b)._2).map { rcolIndex =>
       a.map { lrow =>
         lrow.zip(b.map(_.apply(rcolIndex))).map({ case (x, y) => x * y }).sum
       }

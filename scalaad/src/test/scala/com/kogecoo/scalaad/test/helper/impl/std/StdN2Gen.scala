@@ -1,8 +1,7 @@
 package com.kogecoo.scalaad.test.helper.impl.std
 
-import com.kogecoo.scalaad.StdMat
 import com.kogecoo.scalaad.graph._
-import com.kogecoo.scalaad.impl.std.StdMatrix
+import com.kogecoo.scalaad.impl.std.{StdMat, StdMatrix}
 import com.kogecoo.scalaad.test.helper._
 import org.scalacheck.Gen
 

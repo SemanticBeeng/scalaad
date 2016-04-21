@@ -1,7 +1,8 @@
 package com.kogecoo.scalaad.impl.nd4j
 
 import com.kogecoo.scalaad.graph.S2
-import com.kogecoo.scalaad.{Shape2, StdMat, Tensor2}
+import com.kogecoo.scalaad.impl.std.StdMat
+import com.kogecoo.scalaad.{Shape2, Tensor2}
 import org.nd4j.linalg.api.ndarray.INDArray
 
 
