@@ -1,6 +1,7 @@
 package com.kogecoo.scalaad.algorithm
 
-import com.kogecoo.scalaad.graph._
+import com.kogecoo.scalaad.node._
+import com.kogecoo.scalaad.op.{Cos0, Cosh0, Dot01, Dot10, Dot11, Exp0, Gt00, Ln0, Lt00, MatMul22, MatMul2C1, MatMulR12, Pow00, Sin0, Sinh0, Sqrt0, Tan0, Tanh0}
 
 import scala.Predef.{any2stringadd => _}
 

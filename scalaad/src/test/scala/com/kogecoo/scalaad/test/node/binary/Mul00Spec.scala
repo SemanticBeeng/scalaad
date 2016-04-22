@@ -1,6 +1,6 @@
 package com.kogecoo.scalaad.test.node.binary
 
-import com.kogecoo.scalaad.graph.{Mul00, N0}
+import com.kogecoo.scalaad.node.{Mul00, N0}
 import com.kogecoo.scalaad.test.{SpecBackend, StdSpecBackend}
 import org.scalacheck.Properties
 

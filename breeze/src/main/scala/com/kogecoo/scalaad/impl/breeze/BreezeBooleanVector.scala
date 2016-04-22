@@ -1,7 +1,7 @@
 package com.kogecoo.scalaad.impl.breeze
 
 import breeze.linalg.BitVector
-import com.kogecoo.scalaad.graph.S1
+import com.kogecoo.scalaad.node.S1
 import com.kogecoo.scalaad.impl.std.StdVec
 import com.kogecoo.scalaad.{BoolTensor1, Shape1}
 

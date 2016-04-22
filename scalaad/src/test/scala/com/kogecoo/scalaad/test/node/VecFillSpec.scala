@@ -1,7 +1,7 @@
 package com.kogecoo.scalaad.test.node
 
 import com.kogecoo.scalaad.Shape1
-import com.kogecoo.scalaad.graph.{N0, N1, N2, S1, Var0, VecFill}
+import com.kogecoo.scalaad.node.{N0, N1, N2, S1, Var0, VecFill}
 import com.kogecoo.scalaad.test.{NodeSpecBase, SpecBackend, StdSpecBackend}
 import org.scalacheck.Prop.forAll
 import org.scalacheck.Properties

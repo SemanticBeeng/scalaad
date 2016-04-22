@@ -1,6 +1,6 @@
 package com.kogecoo.scalaad
 
-import com.kogecoo.scalaad.graph.{One0, N0}
+import com.kogecoo.scalaad.node.{One0, N0}
 import com.kogecoo.scalaad.impl.std.Implicits._
 import Predef.{any2stringadd => _, _}
 

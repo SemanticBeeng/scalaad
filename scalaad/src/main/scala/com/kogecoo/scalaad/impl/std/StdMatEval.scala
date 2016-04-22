@@ -1,7 +1,7 @@
 package com.kogecoo.scalaad.impl.std
 
 import com.kogecoo.scalaad.algorithm.Eval
-import com.kogecoo.scalaad.graph._
+import com.kogecoo.scalaad.node._
 import com.kogecoo.scalaad.impl.std.Implicits._
 import com.kogecoo.scalaad.impl.std.StdUtil.{T0, T1, T2}
 import com.kogecoo.scalaad.impl.std.{StdUtil => U}

@@ -1,4 +1,4 @@
-package com.kogecoo.scalaad.graph
+package com.kogecoo.scalaad.node
 
 import com.kogecoo.scalaad._
 

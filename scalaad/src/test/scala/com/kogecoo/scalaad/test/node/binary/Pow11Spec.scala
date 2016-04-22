@@ -1,6 +1,6 @@
 package com.kogecoo.scalaad.test.node.binary
 
-import com.kogecoo.scalaad.graph.{N1, N2, Pow11, Var1}
+import com.kogecoo.scalaad.node.{N1, N2, Pow11, Var1}
 import com.kogecoo.scalaad.test.helper.impl.std.StdValueGen
 import com.kogecoo.scalaad.test.{SpecBackend, StdSpecBackend}
 import org.scalacheck.{Gen, Properties}

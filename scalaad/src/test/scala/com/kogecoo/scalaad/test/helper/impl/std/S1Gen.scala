@@ -1,7 +1,7 @@
 package com.kogecoo.scalaad.test.helper.impl.std
 
 import com.kogecoo.scalaad.Shape1
-import com.kogecoo.scalaad.graph.S1
+import com.kogecoo.scalaad.node.S1
 import org.scalacheck.Gen
 
 

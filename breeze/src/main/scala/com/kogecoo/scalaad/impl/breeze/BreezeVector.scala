@@ -2,7 +2,7 @@ package com.kogecoo.scalaad.impl.breeze
 
 
 import breeze.linalg.DenseVector
-import com.kogecoo.scalaad.graph.S1
+import com.kogecoo.scalaad.node.S1
 import com.kogecoo.scalaad.impl.std.StdVec
 import com.kogecoo.scalaad.{Shape1, Tensor1}
 

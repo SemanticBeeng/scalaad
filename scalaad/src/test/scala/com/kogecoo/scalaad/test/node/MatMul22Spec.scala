@@ -1,7 +1,7 @@
 package com.kogecoo.scalaad.test.node.binary
 
 import com.kogecoo.scalaad.Shape2
-import com.kogecoo.scalaad.graph._
+import com.kogecoo.scalaad.node._
 import com.kogecoo.scalaad.impl.std.Implicits._
 import com.kogecoo.scalaad.test.NodeSpecBase
 import com.kogecoo.scalaad.test.helper.impl.std.Implicits._

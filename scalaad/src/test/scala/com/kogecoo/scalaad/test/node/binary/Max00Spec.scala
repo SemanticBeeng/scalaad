@@ -1,6 +1,7 @@
 package com.kogecoo.scalaad.test.node.binary
 
-import com.kogecoo.scalaad.graph.{Max00, N0}
+import com.kogecoo.scalaad.node.N0
+import com.kogecoo.scalaad.op.Max00
 import com.kogecoo.scalaad.test.{SpecBackend, StdSpecBackend}
 import org.scalacheck.Properties
 

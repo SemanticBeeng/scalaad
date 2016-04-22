@@ -1,7 +1,7 @@
 package com.kogecoo.scalaad.impl.std
 
 import com.kogecoo.scalaad._
-import com.kogecoo.scalaad.graph._
+import com.kogecoo.scalaad.node._
 
 import scala.language.implicitConversions
 

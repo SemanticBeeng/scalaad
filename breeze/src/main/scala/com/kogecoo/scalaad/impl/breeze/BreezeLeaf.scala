@@ -2,7 +2,7 @@ package com.kogecoo.scalaad.impl.breeze
 
 import breeze.linalg.{Transpose, DenseMatrix, DenseVector}
 import com.kogecoo.scalaad.{Shape2, Shape1}
-import com.kogecoo.scalaad.graph._
+import com.kogecoo.scalaad.node._
 import com.kogecoo.scalaad.impl.std.StdScalar
 
 import scala.language.implicitConversions

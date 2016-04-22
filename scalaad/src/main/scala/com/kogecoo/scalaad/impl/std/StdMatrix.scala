@@ -1,6 +1,6 @@
 package com.kogecoo.scalaad.impl.std
 
-import com.kogecoo.scalaad.graph.S2
+import com.kogecoo.scalaad.node.S2
 import com.kogecoo.scalaad.{Shape2, Tensor2}
 
 

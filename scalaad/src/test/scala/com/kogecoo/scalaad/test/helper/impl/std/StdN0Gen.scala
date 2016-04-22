@@ -1,6 +1,6 @@
 package com.kogecoo.scalaad.test.helper.impl.std
 
-import com.kogecoo.scalaad.graph._
+import com.kogecoo.scalaad.node._
 import com.kogecoo.scalaad.impl.std.StdScalar
 import com.kogecoo.scalaad.test.helper._
 import org.scalacheck.Gen

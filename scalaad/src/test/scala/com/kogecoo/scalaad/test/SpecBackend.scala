@@ -1,7 +1,7 @@
 package com.kogecoo.scalaad.test
 
 import com.kogecoo.scalaad.Shape2
-import com.kogecoo.scalaad.graph.{S1, S2}
+import com.kogecoo.scalaad.node.{S1, S2}
 import com.kogecoo.scalaad.test.helper.{N0Gen, N1Gen, N2Gen}
 import org.scalacheck.Prop.BooleanOperators
 import org.scalacheck.{Gen, Prop}

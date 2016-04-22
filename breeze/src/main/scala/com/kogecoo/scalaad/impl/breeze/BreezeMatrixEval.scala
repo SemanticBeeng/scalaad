@@ -5,7 +5,7 @@ import breeze.{ numerics => bmath }
 import scala.Predef.{any2stringadd => _, _}
 
 import com.kogecoo.scalaad.algorithm.Eval
-import com.kogecoo.scalaad.graph._
+import com.kogecoo.scalaad.node._
 import com.kogecoo.scalaad.impl.breeze.Implicits._
 
 

@@ -1,6 +1,6 @@
 package com.kogecoo.scalaad.test
 
-import com.kogecoo.scalaad.graph.{N0, N1, N2}
+import com.kogecoo.scalaad.node.{N0, N1, N2}
 import org.scalacheck.Prop
 
 

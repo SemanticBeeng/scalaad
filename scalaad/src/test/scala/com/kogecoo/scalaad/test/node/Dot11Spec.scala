@@ -1,7 +1,8 @@
 package com.kogecoo.scalaad.test.node
 
-import com.kogecoo.scalaad.graph._
+import com.kogecoo.scalaad.node._
 import com.kogecoo.scalaad.impl.std.Implicits._
+import com.kogecoo.scalaad.op.Dot11
 import com.kogecoo.scalaad.test.{NodeSpecBase, SpecBackend, StdSpecBackend}
 import com.kogecoo.scalaad.test.helper.impl.std.Implicits._
 import org.scalacheck.Prop.forAll
