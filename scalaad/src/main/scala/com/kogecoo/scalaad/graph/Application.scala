@@ -82,51 +82,52 @@ case class Apply1[S <: Shape](v: VE[S], op: Op0) extends CommonShapedApplication
 
   def analyze(a: Analyzing): Param[S] = a.addEqn(Eqn1(v.analyze(a), op))
 
-}
-
-
-case class Fold1[SI1 <: Shape](v: VE[SI1], op: UnaryOp[S0, SI1]) extends Application1[S0, SI1] {
-
-  def shape: S0 = Shape0()
-
-  def analyze(a: Analyzing): Param[S0] = a.addEqn(FoldEqn1(v.analyze(a), op))
+  // df(g(x)) / dx = f'(g(x)) * f(g'(x))
+  def forward[SO <: Shape, SI <: Shape](wrt: VarBase[SI]): ValueExpr[SO] = {
+    v.forward[SO, SI](wrt) * Apply1[SO, SI](v, op.deriv())
+  }
 
 }
 
 
-case class Fill[SO <: Shape](v: VE0, shape: SO) extends Application1[SO, S0] {
+case class ReshapeApply1[SO <: Shape, SI <: Shape](v: VE[SI], op: UnaryOp[SO, SI]) extends Application1[SO, SI] {
 
-  def analyze(a: Analyzing): Param[SO] = a.addEqn(FillEqn1(v.analyze(a), shape))
+  def analyze(a: Analyzing): Param[SO] = a.addEqn(FoldEqn1(v.analyze(a), op))
+
+  def forward[O <: Shape, I <: Shape](wrt: VarBase[I]): ValueExpr[O] = {
+     ReshapeApply1[O, I](v.forward[O, I](wrt), op.deriv())
+  }
 
 }
-
-
 
 // Binary Application
 
 case class Apply2[S <: Shape](l: VE[S], r: VE[S], op: Op00) extends CommonShapedApplication2[S] {
 
   def analyze(a: Analyzing): Param[S] = a.addEqn(Eqn2(l.analyze(a), r.analyze(a), op))
+
+  def forward[SO <: Shape, SI <: Shape](wrt: VarBase[SI]): ValueExpr[SO] = {
+     Apply2[SO, SI](l.forward[SO, SI](wrt), r, op.deriv()) + Apply2[SO, SI](l, r.forward[SO, SI](wrt), op.deriv())
+  }
+
 }
 
 
-case class ElementwiseLeft[S <: Shape](l: VE[S], r: VE0, op: Op00) extends LeftShapedApplication2[S, S0] {
+case class ElementwiseLeft[SI1 <: Shape, SI2 <: Shape](l: VE[SI1], r: VE[SI2], op: Op00) extends LeftShapedApplication2[SI1, SI2] {
 
-  def analyze(a: Analyzing): Param[S] = a.addEqn(ElementwiseEqn2(l.analyze(a), r.analyze(a), op))
+  def analyze(a: Analyzing): Param[SI1] = a.addEqn(ElementwiseEqn2(l.analyze(a), r.analyze(a), op))
 }
 
 
-case class ElementwiseRight[S <: Shape](l: VE0, r: VE[S], op: Op00) extends RightShapedApplication2[S0, S] {
+case class ElementwiseRight[SI1 <: Shape, SI2 <: Shape](l: VE[SI1], r: VE[SI2], op: Op00) extends RightShapedApplication2[SI1, SI2] {
 
-  def analyze(a: Analyzing): Param[S] = a.addEqn(ElementwiseEqn2(l.analyze(a), r.analyze(a), op))
+  def analyze(a: Analyzing): Param[SI2] = a.addEqn(ElementwiseEqn2(l.analyze(a), r.analyze(a), op))
 }
 
 
-case class Fold2[SI1 <: Shape, SI2 <: Shape](l: VE[SI1], r: VE[SI2], op: BinaryOp[S0, SI1, SI2]) extends Application2[S0, SI1, SI2] {
+case class ReshapeApply2[SO <: Shape, SI1 <: Shape, SI2 <: Shape](l: VE[SI1], r: VE[SI2], op: BinaryOp[SO, SI1, SI2]) extends Application2[SO, SI1, SI2] {
 
-  def shape: S0 = Shape0()
-
-  def analyze(a: Analyzing): Param[S0] = a.addEqn(FoldEqn2(l.analyze(a), r.analyze(a), op))
+  def analyze(a: Analyzing): Param[SO] = a.addEqn(FoldEqn2(l.analyze(a), r.analyze(a), op))
 
 }
 

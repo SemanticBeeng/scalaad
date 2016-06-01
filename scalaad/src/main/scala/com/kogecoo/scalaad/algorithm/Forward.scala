@@ -5,7 +5,7 @@ import com.kogecoo.scalaad.op._
 
 import scala.Predef.{any2stringadd => _}
 
-/*
+
 trait Forward[N, W, O] {
 
   def forward(n: N, wrt: W): O
@@ -49,7 +49,9 @@ object Forward {
       case _: Const0  => Zero0()
 
 
-      case Apply1(v, op) => op match {
+      case Apply1(v, op) => v.forward[W, O](wrt) * Apply1(v, op.deriv())
+      case Apply2(l, r, op) => v.forward[W, O](wrt) * Apply1(v, op.deriv())
+      /*op match {
         case Pos => +v.forward[W, O](wrt)
         case Neg => -v.forward[W, O](wrt)
 
@@ -71,9 +73,10 @@ object Forward {
 
         // Experimental
         case Abs     => Where0_0(v > Zero0(), v.forward[W, O](wrt), -v.forward[W, O](wrt))
-      }
 
-      case Apply00(l, r, op) => op match {
+      }*/
+
+      case Apply2(l, r, op) => op match {
         case Add => l.forward[W, O](wrt) + r.forward[W, O](wrt)
         case Sub => l.forward[W, O](wrt) - r.forward[W, O](wrt)
         case Mul => (l.forward[W, O](wrt) * r) + (l * r.forward[W, O](wrt))
@@ -97,11 +100,11 @@ object Forward {
     }
   }
 
-  implicit def forward011: Forward[V0, V1, V1] = new Forward[V0, V1, V1] {
+  implicit def forward011: Forward[VE0, VE1, VE1] = new Forward[VE0, VE1, VE1] {
 
-    private[this] type N = V0
-    private[this] type W = V1
-    private[this] type O = V1
+    private[this] type N = VE0
+    private[this] type W = VE1
+    private[this] type O = VE1
 
     def forward(n: N, wrt: W): O = n match {
 
@@ -383,4 +386,4 @@ object Forward {
 */
 }
 
-*/
+
